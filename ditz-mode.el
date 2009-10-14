@@ -89,6 +89,11 @@ must set it from minibuffer."
   (interactive)
   (ditz-call-process "log" nil "pop"))
 
+(defun ditz-shortlog ()
+  "Show short log of recent activities."
+  (interactive)
+  (ditz-call-process "shortlog" nil "pop"))
+
 (defun ditz-show ()
   "Show issue details."
   (interactive)
@@ -267,14 +272,18 @@ must set it from minibuffer."
 (define-key ditz-mode-map "s" 'ditz-show)
 
 (define-key ditz-mode-map "A" 'ditz-add)
+(define-key ditz-mode-map "R" 'ditz-add-release)
 (define-key ditz-mode-map "D" 'ditz-drop)
 (define-key ditz-mode-map "C" 'ditz-close)
+(define-key ditz-mode-map "H" 'ditz-html)
 
 (define-key ditz-mode-map "a" 'ditz-assign)
 (define-key ditz-mode-map "e" 'ditz-edit)
 (define-key ditz-mode-map "c" 'ditz-comment)
 
-(define-key ditz-mode-map "l" 'ditz-log)
+(define-key ditz-mode-map "l" 'ditz-shortlog)
+(define-key ditz-mode-map "L" 'ditz-log)
+
 (define-key ditz-mode-map "r" 'ditz-release)
 (define-key ditz-mode-map "g" 'ditz-reload)
 (define-key ditz-mode-map "q" 'ditz-close-buffer)
