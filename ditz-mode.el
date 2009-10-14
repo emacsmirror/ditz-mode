@@ -95,7 +95,7 @@ must set it from minibuffer."
   (let ((issue-id nil))
     (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
     (if issue-id
-        (ditz-call-process "show" issue-id "switch")
+        (ditz-call-process "show" issue-id "display")
       (error "Issue id not found"))))
 
 (defun ditz-assign ()
@@ -178,6 +178,7 @@ must set it from minibuffer."
           (delete-process proc))
 
     (with-current-buffer buffer
+      (setq buffer-read-only nil)
       (erase-buffer)
       (buffer-disable-undo (current-buffer)))
 
@@ -185,9 +186,8 @@ must set it from minibuffer."
                            buffer shell-file-name nil shell-command-switch
                            (ditz-build-command command arg))
 
-    (cond ((or (eq major-mode 'ditz-mode)
-               (string= popup-flag "switch"))
-           (switch-to-buffer buffer))
+    (cond ((string= popup-flag "switch")
+	   (switch-to-buffer buffer))
           ((string= popup-flag "pop")
            (pop-to-buffer buffer))
           ((string= popup-flag "display")
@@ -249,6 +249,7 @@ must set it from minibuffer."
 (defvar ditz-mode-map (make-keymap)
   "*Keymap for Ditz major mode")
 
+(define-key ditz-mode-map " "    'ditz-show)
 (define-key ditz-mode-map "s"    'ditz-show)
 (define-key ditz-mode-map "\C-m" 'ditz-show)
 (define-key ditz-mode-map "A"    'ditz-add)
