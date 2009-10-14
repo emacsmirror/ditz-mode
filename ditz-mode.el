@@ -108,7 +108,7 @@ must set it from minibuffer."
       (error "Issue id not found"))))
 
 (defun ditz-edit ()
-  "Edit issue detale."
+  "Edit issue details."
   (interactive)
   (let ((issue-id nil))
     (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
@@ -252,11 +252,13 @@ must set it from minibuffer."
 (define-key ditz-mode-map " "    'ditz-show)
 (define-key ditz-mode-map "s"    'ditz-show)
 (define-key ditz-mode-map "\C-m" 'ditz-show)
+
 (define-key ditz-mode-map "A"    'ditz-add)
 (define-key ditz-mode-map "a"    'ditz-assign)
 (define-key ditz-mode-map "D"    'ditz-drop)
 (define-key ditz-mode-map "e"    'ditz-edit)
 (define-key ditz-mode-map "c"    'ditz-close)
+(define-key ditz-mode-map "l"    'ditz-log)
 (define-key ditz-mode-map "r"    'ditz-release)
 (define-key ditz-mode-map "g"    'ditz-reload)
 (define-key ditz-mode-map "q"    'ditz-close-buffer)
@@ -267,9 +269,9 @@ must set it from minibuffer."
 ;; Face
 (defface ditz-issue-id-face
   '((((class color) (background light))
-     (:foreground "blightblue" :underline t :weight bold))
+     (:foreground "blue" :underline t :weight bold))
     (((class color) (background dark))
-     (:foreground "blightblue" :underline t :weight bold)))
+     (:foreground "blue" :underline t :weight bold)))
   "Face definition for issue id")
 
 (defface ditz-release-name-face
