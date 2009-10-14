@@ -243,7 +243,7 @@ must set it from minibuffer."
 
 ;; Hooks
 (defvar ditz-mode-hook nil
-  "*Hooks for Taskpaper major mode")
+  "*Hooks for Ditz major mode")
 
 ;; Keymap
 (defvar ditz-mode-map (make-keymap)
@@ -259,6 +259,9 @@ must set it from minibuffer."
 (define-key ditz-mode-map "r"    'ditz-release)
 (define-key ditz-mode-map "g"    'ditz-reload)
 (define-key ditz-mode-map "q"    'ditz-close-buffer)
+
+(define-key ditz-mode-map "n"    'next-line)
+(define-key ditz-mode-map "p"    'previous-line)
 
 ;; Face
 (defface ditz-issue-id-face
@@ -288,6 +291,7 @@ must set it from minibuffer."
   (kill-all-local-variables)
   (setq major-mode 'ditz-mode)
   (setq mode-name "Ditz")
+  (setq buffer-read-only t)
   (use-local-map ditz-mode-map)
   (set (make-local-variable 'font-lock-defaults)  '(ditz-font-lock-keywords))
   (font-lock-mode 1)
