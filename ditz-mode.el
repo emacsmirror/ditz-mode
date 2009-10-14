@@ -94,64 +94,69 @@ must set it from minibuffer."
   (interactive)
   (let ((issue-id nil))
     (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (if issue-id
-        (ditz-call-process "show" issue-id "display")
-      (error "Issue id not found"))))
+    (when issue-id
+        (ditz-call-process "show" issue-id "display"))))
 
 (defun ditz-assign ()
   "Assign issue to a release."
   (interactive)
   (let ((issue-id nil))
     (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (if issue-id
-        (ditz-call-process "assign" issue-id "switch")
-      (error "Issue id not found"))))
+    (when issue-id
+        (ditz-call-process "assign" issue-id "switch"))))
 
 (defun ditz-comment ()
   "Comment on an issue."
   (interactive)
   (let ((issue-id nil))
     (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (if issue-id
-        (ditz-call-process "comment" issue-id "switch")
-      (error "Issue id not found"))))
+    (when issue-id
+        (ditz-call-process "comment" issue-id "switch"))))
 
 (defun ditz-edit ()
   "Edit issue details."
   (interactive)
   (let ((issue-id nil))
     (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (if issue-id
-        (ditz-call-process "edit" issue-id "switch")
-      (error "Issue id not found"))))
+    (when issue-id
+        (ditz-call-process "edit" issue-id "switch"))))
 
 (defun ditz-close ()
   "Close a issue."
   (interactive)
   (let ((issue-id nil))
     (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (if issue-id
-        (ditz-call-process "close" issue-id "switch")
-      (error "Issue id not found"))))
+    (when issue-id
+        (ditz-call-process "close" issue-id "switch"))))
 
 (defun ditz-drop ()
   "Drop an issue."
   (interactive)
   (let ((issue-id nil))
     (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (if issue-id
-        (when (yes-or-no-p (concat "Drop " issue-id " "))
-          (ditz-call-process "drop" issue-id "switch"))
-      (error "Issue id not found"))))
+    (when issue-id
+      (when (yes-or-no-p (concat "Drop " issue-id " "))
+	(ditz-call-process "drop" issue-id "switch")))))
 
 (defun ditz-release ()
   "Mark issues as released."
   (interactive)
   (let ((release-name nil))
     (setq release-name (ditz-extract-thing-at-point ditz-release-name-regex 2))
-    (if release-name
-        (ditz-call-process "release" release-name "switch")
-      (error "Release name not found"))))
+    (when release-name
+      (ditz-call-process "release" release-name "switch"))))
+
+(defun ditz-next-line ()
+  "Move to next line."
+  (interactive)
+  (forward-line)
+  (ditz-show))
+
+(defun ditz-previous-line ()
+  "Move to previous line."
+  (interactive)
+  (forward-line -1)
+  (ditz-show))
 
 (defun ditz-extract-thing-at-point (regex n)
   (save-excursion
@@ -258,24 +263,24 @@ must set it from minibuffer."
 (defvar ditz-mode-map (make-keymap)
   "*Keymap for Ditz major mode")
 
-(define-key ditz-mode-map " "    'ditz-show)
-(define-key ditz-mode-map "s"    'ditz-show)
+(define-key ditz-mode-map " " 'ditz-show)
+(define-key ditz-mode-map "s" 'ditz-show)
 
-(define-key ditz-mode-map "A"    'ditz-add)
-(define-key ditz-mode-map "D"    'ditz-drop)
-(define-key ditz-mode-map "C"    'ditz-close)
+(define-key ditz-mode-map "A" 'ditz-add)
+(define-key ditz-mode-map "D" 'ditz-drop)
+(define-key ditz-mode-map "C" 'ditz-close)
 
-(define-key ditz-mode-map "a"    'ditz-assign)
-(define-key ditz-mode-map "e"    'ditz-edit)
-(define-key ditz-mode-map "c"    'ditz-comment)
+(define-key ditz-mode-map "a" 'ditz-assign)
+(define-key ditz-mode-map "e" 'ditz-edit)
+(define-key ditz-mode-map "c" 'ditz-comment)
 
-(define-key ditz-mode-map "l"    'ditz-log)
-(define-key ditz-mode-map "r"    'ditz-release)
-(define-key ditz-mode-map "g"    'ditz-reload)
-(define-key ditz-mode-map "q"    'ditz-close-buffer)
+(define-key ditz-mode-map "l" 'ditz-log)
+(define-key ditz-mode-map "r" 'ditz-release)
+(define-key ditz-mode-map "g" 'ditz-reload)
+(define-key ditz-mode-map "q" 'ditz-close-buffer)
 
-(define-key ditz-mode-map "n"    'next-line)
-(define-key ditz-mode-map "p"    'previous-line)
+(define-key ditz-mode-map "n" 'ditz-next-line)
+(define-key ditz-mode-map "p" 'ditz-previous-line)
 
 ;; Face
 (defface ditz-issue-id-face
