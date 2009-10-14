@@ -90,7 +90,7 @@ must set it from minibuffer."
   (ditz-call-process "log" nil "pop"))
 
 (defun ditz-show ()
-  "Show issue detale."
+  "Show issue details."
   (interactive)
   (let ((issue-id nil))
     (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
@@ -105,6 +105,15 @@ must set it from minibuffer."
     (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
     (if issue-id
         (ditz-call-process "assign" issue-id "switch")
+      (error "Issue id not found"))))
+
+(defun ditz-comment ()
+  "Comment on an issue."
+  (interactive)
+  (let ((issue-id nil))
+    (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
+    (if issue-id
+        (ditz-call-process "comment" issue-id "switch")
       (error "Issue id not found"))))
 
 (defun ditz-edit ()
@@ -251,13 +260,15 @@ must set it from minibuffer."
 
 (define-key ditz-mode-map " "    'ditz-show)
 (define-key ditz-mode-map "s"    'ditz-show)
-(define-key ditz-mode-map "\C-m" 'ditz-show)
 
 (define-key ditz-mode-map "A"    'ditz-add)
-(define-key ditz-mode-map "a"    'ditz-assign)
 (define-key ditz-mode-map "D"    'ditz-drop)
+(define-key ditz-mode-map "C"    'ditz-close)
+
+(define-key ditz-mode-map "a"    'ditz-assign)
 (define-key ditz-mode-map "e"    'ditz-edit)
-(define-key ditz-mode-map "c"    'ditz-close)
+(define-key ditz-mode-map "c"    'ditz-comment)
+
 (define-key ditz-mode-map "l"    'ditz-log)
 (define-key ditz-mode-map "r"    'ditz-release)
 (define-key ditz-mode-map "g"    'ditz-reload)
