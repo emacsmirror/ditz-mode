@@ -47,11 +47,11 @@ must set it from minibuffer."
   :group 'ditz)
 
 ;; Constant variables
-(defconst ditz-issue-id-regex "^[_ ]+\\([^:\n]+\\):.*$"
+(defconst ditz-issue-id-regex "^[_>= ]+\\([^:\n]+\\):.*$"
   "Regex for issue id.")
 
 (defconst ditz-release-name-regex "^\\(Version \\)?\\([^\n ]+\\) *.*$"
-  "Regex for issue id.")
+  "Regex for release name.")
 
 ;; Commands
 (defun ditz-init ()
@@ -306,11 +306,11 @@ must set it from minibuffer."
      (:foreground "red" :underline t :weight bold)))
   "Face definition for release name")
 
-(defvar ditz-issue-id-face 'ditz-issue-id-face)
-(defvar ditz-release-name-face 'ditz-release-name-face)
-(defvar ditz-font-lock-keywords
-  '(("^[_ ]+\\([^:\n]+\\):.*$" (1 ditz-issue-id-face t))
-    ("^Version *\\([^\n ]+\\) *.*$" (1 ditz-release-name-face t))))
+(defconst ditz-issue-id-face 'ditz-issue-id-face)
+(defconst ditz-release-name-face 'ditz-release-name-face)
+(defconst ditz-font-lock-keywords
+  `((,ditz-issue-id-regex (1 ditz-issue-id-face t))
+    (,ditz-release-name-regex (1 ditz-release-name-face t))))
 
 ;; Ditz major mode
 (define-derived-mode ditz-mode fundamental-mode "Ditz"
