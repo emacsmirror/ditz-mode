@@ -47,11 +47,17 @@ must set it from minibuffer."
   :group 'ditz)
 
 ;; Constant variables
-(defconst ditz-issue-id-regex "^[_>= ]+\\([^:\n]+\\):.*$"
+(defconst ditz-issue-id-regex "^[_>= ]+\\([-a-z0-9]+\\):.*$"
   "Regex for issue id.")
 
-(defconst ditz-release-name-regex "^\\(Version \\)?\\([^\n ]+\\) *.*$"
-  "Regex for release name.")
+(defconst ditz-issue-attr-regex "^\s*\\([^ :\n]+\\): .*$"
+  "Regex for issue attribute.")
+
+;;(defconst ditz-release-name-regex "^\\(?:Version \\)?\\([^:\n ]+\\) *.*$"
+;;  "Regex for release name.")
+
+(defconst ditz-comment-regex "^ +\\(>.*\\)$"
+  "Regex for comment.")
 
 ;; Commands
 (defun ditz-init ()
@@ -299,6 +305,13 @@ must set it from minibuffer."
      (:foreground "blue" :underline t :weight bold)))
   "Face definition for issue id")
 
+(defface ditz-issue-attr-face
+  '((((class color) (background light))
+     (:foreground "blue" :weight bold))
+    (((class color) (background dark))
+     (:foreground "blue" :weight bold)))
+  "Face definition for issue attribute")
+
 (defface ditz-release-name-face
   '((((class color) (background light))
      (:foreground "red" :underline t :weight bold))
@@ -306,11 +319,23 @@ must set it from minibuffer."
      (:foreground "red" :underline t :weight bold)))
   "Face definition for release name")
 
+(defface ditz-comment-face
+  '((((class color) (background light))
+     (:foreground "dim gray"))
+    (((class color) (background dark))
+     (:foreground "dim gray")))
+  "Face definition for comments")
+
 (defconst ditz-issue-id-face 'ditz-issue-id-face)
+(defconst ditz-issue-attr-face 'ditz-issue-attr-face)
 (defconst ditz-release-name-face 'ditz-release-name-face)
+(defconst ditz-comment-face 'ditz-comment-face)
+
 (defconst ditz-font-lock-keywords
   `((,ditz-issue-id-regex (1 ditz-issue-id-face t))
-    (,ditz-release-name-regex (1 ditz-release-name-face t))))
+    (,ditz-issue-attr-regex (1 ditz-issue-attr-face t))
+;;    (,ditz-release-name-regex (1 ditz-release-name-face t))
+    (,ditz-comment-regex (1 ditz-comment-face t))))
 
 ;; Ditz major mode
 (define-derived-mode ditz-mode fundamental-mode "Ditz"
