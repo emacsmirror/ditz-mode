@@ -149,6 +149,22 @@ must set it from minibuffer."
       (when (yes-or-no-p (concat "Drop " issue-id " "))
 	(ditz-call-process "drop" issue-id "switch")))))
 
+(defun ditz-start ()
+  "Start work on an issue."
+  (interactive)
+  (let ((issue-id nil))
+    (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
+    (when issue-id
+        (ditz-call-process "start" issue-id "switch"))))
+
+(defun ditz-stop ()
+  "Stop work on an issue."
+  (interactive)
+  (let ((issue-id nil))
+    (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
+    (when issue-id
+        (ditz-call-process "stop" issue-id "switch"))))
+
 (defun ditz-release ()
   "Mark issues as released."
   (interactive)
@@ -286,6 +302,9 @@ must set it from minibuffer."
 (define-key ditz-mode-map "a" 'ditz-assign)
 (define-key ditz-mode-map "e" 'ditz-edit)
 (define-key ditz-mode-map "c" 'ditz-comment)
+
+(define-key ditz-mode-map "<" 'ditz-start)
+(define-key ditz-mode-map ">" 'ditz-stop)
 
 (define-key ditz-mode-map "l" 'ditz-shortlog)
 (define-key ditz-mode-map "L" 'ditz-log)
