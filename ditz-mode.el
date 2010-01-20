@@ -39,7 +39,7 @@ you use automatic finding described below."
   :type 'string
   :group 'ditz)
 
-(defcustom ditz-find-issue-directory-automatically-flag nil
+(defcustom ditz-find-issue-directory-automatically-flag t
   "If non-nil, issue directory will be found automatically in
 directories from the current one toward the root. Otherwise, you
 must set it from minibuffer."
@@ -53,8 +53,8 @@ must set it from minibuffer."
 (defconst ditz-issue-attr-regex "^\s*\\([^ :\n]+\\): .*$"
   "Regex for issue attribute.")
 
-;;(defconst ditz-release-name-regex "^\\(?:Version \\)?\\([^:\n ]+\\) *.*$"
-;;  "Regex for release name.")
+(defconst ditz-release-name-regex "^\\([^ ]+\\) (.*$"
+  "Regex for release name.")
 
 (defconst ditz-comment-regex "^ +\\(>.*\\)$"
   "Regex for comment.")
@@ -103,94 +103,77 @@ must set it from minibuffer."
 (defun ditz-show ()
   "Show issue details."
   (interactive)
-  (let ((issue-id nil))
-    (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (when issue-id
-        (ditz-call-process "show" issue-id "display"))))
+  (ditz-call-process "show" (ditz-extract-issue) "display"))
 
 (defun ditz-assign ()
   "Assign issue to a release."
   (interactive)
-  (let ((issue-id nil))
-    (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (when issue-id
-        (ditz-call-process "assign" issue-id "switch"))))
+  (ditz-call-process "assign" (ditz-extract-issue) "switch"))
 
 (defun ditz-comment ()
   "Comment on an issue."
   (interactive)
-  (let ((issue-id nil))
-    (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (when issue-id
-        (ditz-call-process "comment" issue-id "switch"))))
+  (ditz-call-process "comment" (ditz-extract-issue) "switch"))
 
 (defun ditz-edit ()
   "Edit issue details."
   (interactive)
-  (let ((issue-id nil))
-    (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (when issue-id
-        (ditz-call-process "edit" issue-id "switch"))))
+  (let ((issue-id (ditz-extract-issue)))
+    (save-excursion
+      (ditz-call-process "show" issue-id)
+      (set-buffer "*ditz-show*")
+      (goto-char (point-min))
+      (let ((beg (search-forward "Identifier: "))
+	    (end (line-end-position)))
+	(setq issue-id (buffer-substring-no-properties beg end))))
+    (message "Issue: " issue-id)))
 
 (defun ditz-close ()
-  "Close a issue."
+  "Close an issue."
   (interactive)
-  (let ((issue-id nil))
-    (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (when issue-id
-        (ditz-call-process "close" issue-id "switch"))))
+  (ditz-call-process "close" (ditz-extract-issue) "switch"))
 
 (defun ditz-drop ()
   "Drop an issue."
   (interactive)
-  (let ((issue-id nil))
-    (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (when issue-id
-      (when (yes-or-no-p (concat "Drop " issue-id " "))
-	(ditz-call-process "drop" issue-id "switch")))))
+  (let ((issue-id (ditz-extract-issue)))
+    (when (yes-or-no-p (concat "Drop " issue-id " "))
+      (ditz-call-process "drop" issue-id "switch"))))
 
 (defun ditz-start ()
   "Start work on an issue."
   (interactive)
-  (let ((issue-id nil))
-    (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (when issue-id
-        (ditz-call-process "start" issue-id "switch"))))
+  (ditz-call-process "start" (ditz-extract-issue) "switch"))
 
 (defun ditz-stop ()
   "Stop work on an issue."
   (interactive)
-  (let ((issue-id nil))
-    (setq issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1))
-    (when issue-id
-        (ditz-call-process "stop" issue-id "switch"))))
+  (ditz-call-process "stop" (ditz-extract-issue) "switch"))
 
 (defun ditz-release ()
   "Mark issues as released."
   (interactive)
   (let ((release-name nil))
-    (setq release-name (ditz-extract-thing-at-point ditz-release-name-regex 2))
+    (setq release-name (ditz-extract-thing-at-point ditz-release-name-regex 1))
     (when release-name
       (ditz-call-process "release" release-name "switch"))))
 
-(defun ditz-next-line ()
-  "Move to next line."
-  (interactive)
-  (forward-line)
-  (ditz-show))
-
-(defun ditz-previous-line ()
-  "Move to previous line."
-  (interactive)
-  (forward-line -1)
-  (ditz-show))
-
 (defun ditz-extract-thing-at-point (regex n)
   (save-excursion
-    (let ((line (buffer-substring-no-properties (progn (beginning-of-line) (point))
-                                  (progn (end-of-line) (point)))))
+    (let ((line (buffer-substring-no-properties (progn
+						  (beginning-of-line)
+						  (point))
+						(progn
+						  (end-of-line)
+						  (point)))))
       (when (string-match regex line)
         (match-string n line)))))
+
+(defun ditz-extract-issue ()
+  (let ((issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1)))
+    (unless issue-id
+      (error "No issue on this line"))
+    issue-id))
 
 (defun ditz-reload ()
   (interactive)
@@ -241,7 +224,7 @@ must set it from minibuffer."
      '(lambda (process signal)
         (when (string= signal "finished\n")
           (with-current-buffer (process-buffer process)
-            (ditz-mode)
+	    (ditz-mode)
             (goto-char (point-min)))))))))
 
 (defvar ditz-last-visited-issue-directory nil)
@@ -249,7 +232,7 @@ must set it from minibuffer."
 (defun ditz-build-command (command arg)
   (let (issue-directory current-directory)
 
-    ;; Reserve current directory to come back later It's needed when
+    ;; Reserve current directory to come back later.  It's needed when
     ;; automatically finding directory.
     (when buffer-file-name
       (setq current-directory (file-name-directory (buffer-file-name))))
@@ -313,15 +296,15 @@ must set it from minibuffer."
 (define-key ditz-mode-map "g" 'ditz-reload)
 (define-key ditz-mode-map "q" 'ditz-close-buffer)
 
-(define-key ditz-mode-map "n" 'ditz-next-line)
-(define-key ditz-mode-map "p" 'ditz-previous-line)
+(define-key ditz-mode-map "n" 'next-line)
+(define-key ditz-mode-map "p" 'previous-line)
 
 ;; Face
 (defface ditz-issue-id-face
   '((((class color) (background light))
-     (:foreground "blue" :underline t :weight bold))
+     (:foreground "blue" :weight bold))
     (((class color) (background dark))
-     (:foreground "blue" :underline t :weight bold)))
+     (:foreground "blue" :weight bold)))
   "Face definition for issue id")
 
 (defface ditz-issue-attr-face
@@ -333,9 +316,9 @@ must set it from minibuffer."
 
 (defface ditz-release-name-face
   '((((class color) (background light))
-     (:foreground "red" :underline t :weight bold))
+     (:foreground "red" :weight bold))
     (((class color) (background dark))
-     (:foreground "red" :underline t :weight bold)))
+     (:foreground "red" :weight bold)))
   "Face definition for release name")
 
 (defface ditz-comment-face
@@ -353,7 +336,7 @@ must set it from minibuffer."
 (defconst ditz-font-lock-keywords
   `((,ditz-issue-id-regex (1 ditz-issue-id-face t))
     (,ditz-issue-attr-regex (1 ditz-issue-attr-face t))
-;;    (,ditz-release-name-regex (1 ditz-release-name-face t))
+    (,ditz-release-name-regex (1 ditz-release-name-face t))
     (,ditz-comment-regex (1 ditz-comment-face t))))
 
 ;; Ditz major mode
