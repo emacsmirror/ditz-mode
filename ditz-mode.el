@@ -110,6 +110,11 @@ must set it from minibuffer."
   (interactive)
   (ditz-call-process "assign" (ditz-extract-issue) "switch"))
 
+(defun ditz-unassign ()
+  "Unassign an issue."
+  (interactive)
+  (ditz-call-process "unassign" (ditz-extract-issue) "switch"))
+
 (defun ditz-comment ()
   "Comment on an issue."
   (interactive)
@@ -283,6 +288,7 @@ must set it from minibuffer."
 (define-key ditz-mode-map "H" 'ditz-html)
 
 (define-key ditz-mode-map "a" 'ditz-assign)
+(define-key ditz-mode-map "u" 'ditz-unassign)
 (define-key ditz-mode-map "e" 'ditz-edit)
 (define-key ditz-mode-map "c" 'ditz-comment)
 
