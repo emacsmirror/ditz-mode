@@ -47,7 +47,7 @@ must set it from minibuffer."
   :group 'ditz)
 
 ;; Constant variables
-(defconst ditz-issue-id-regex "^[_>= ]+\\([-a-z0-9]+\\):.*$"
+(defconst ditz-issue-id-regex "\\([a-z0-9]+-[0-9]+\\)"
   "Regex for issue id.")
 
 (defconst ditz-issue-attr-regex "^\s*\\([^ :\n]+\\): .*$"
@@ -125,8 +125,7 @@ must set it from minibuffer."
   (interactive)
   (let ((issue-id (ditz-extract-issue)))
     (save-excursion
-      (ditz-call-process "show" issue-id)
-      (set-buffer "*ditz-show*")
+      (ditz-call-process "show" issue-id "switch")
       (goto-char (point-min))
       (let ((beg (search-forward "Identifier: "))
 	    (end (line-end-position)))
@@ -196,7 +195,8 @@ must set it from minibuffer."
 
 (defun ditz-call-process (command &optional arg popup-flag)
   "Call ditz process asynchronously according with sub-commands."
-  (let* ((buffer (get-buffer-create (concat "*ditz-" command "*")))
+  (let* ((bufname (concat "*ditz-" command "*"))
+	 (buffer (get-buffer-create bufname))
          (proc (get-buffer-process buffer)))
 
     (if (and proc (eq (process-status proc) 'run))
@@ -215,7 +215,8 @@ must set it from minibuffer."
                            buffer shell-file-name nil shell-command-switch
                            (ditz-build-command command arg))
 
-    (cond ((string= popup-flag "switch")
+    (cond ((or (eq major-mode 'ditz-mode)
+               (string= popup-flag "switch"))
 	   (switch-to-buffer buffer))
           ((string= popup-flag "pop")
            (pop-to-buffer buffer))
@@ -315,9 +316,9 @@ must set it from minibuffer."
 
 (defface ditz-issue-attr-face
   '((((class color) (background light))
-     (:foreground "blue" :weight bold))
+     (:foreground "light blue" :weight bold))
     (((class color) (background dark))
-     (:foreground "blue" :weight bold)))
+     (:foreground "light blue" :weight bold)))
   "Face definition for issue attribute")
 
 (defface ditz-release-name-face
