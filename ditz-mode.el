@@ -25,6 +25,11 @@
 
 ;;; Code:
 
+(defgroup ditz nil
+  "Interface to Ditz distributed bug tracker."
+  :prefix "ditz-"
+  :group 'tools)
+
 ;; Customizable variables
 (defcustom ditz-program "ditz"
   "Ditz command"
@@ -312,28 +317,32 @@ must set it from minibuffer."
      (:foreground "blue" :weight bold))
     (((class color) (background dark))
      (:foreground "blue" :weight bold)))
-  "Face definition for issue id")
+  "Face definition for issue id."
+  :group 'ditz)
 
 (defface ditz-issue-attr-face
   '((((class color) (background light))
-     (:foreground "light blue" :weight bold))
+     (:foreground "steel blue" :weight bold))
     (((class color) (background dark))
-     (:foreground "light blue" :weight bold)))
-  "Face definition for issue attribute")
+     (:foreground "steel blue" :weight bold)))
+  "Face definition for issue attribute."
+  :group 'ditz)
 
 (defface ditz-release-name-face
   '((((class color) (background light))
      (:foreground "red" :weight bold))
     (((class color) (background dark))
      (:foreground "red" :weight bold)))
-  "Face definition for release name")
+  "Face definition for release name."
+  :group 'ditz)
 
 (defface ditz-comment-face
   '((((class color) (background light))
      (:foreground "dim gray"))
     (((class color) (background dark))
      (:foreground "dim gray")))
-  "Face definition for comments")
+  "Face definition for comments."
+  :group 'ditz)
 
 (defconst ditz-issue-id-face 'ditz-issue-id-face)
 (defconst ditz-issue-attr-face 'ditz-issue-attr-face)
