@@ -206,12 +206,13 @@ must set it from minibuffer."
   (quit-window))
 
 (defun ditz-call-process (command &optional arg popup-flag interactive)
-  "Call ditz process asynchronously according with sub-commands."
+  "Invoke a ditz command."
+
   (let* ((bufname (concat "*ditz-" command "*"))
 	 (buffer (get-buffer-create bufname))
          (proc (get-buffer-process buffer)))
 
-    (if (and proc (eq (process-status proc) 'run))
+    (if (and interactive proc (eq (process-status proc) 'run))
         (when (y-or-n-p (format "A %s process is running; kill it?"
                                 (process-name proc)))
           (interrupt-process proc)
@@ -240,14 +241,7 @@ must set it from minibuffer."
           (t
            (set-buffer buffer)))
 
-    (if interactive
-	(set-process-sentinel
-	 (get-buffer-process buffer)
-	 '(lambda (process signal)
-	    (when (string= signal "finished\n")
-	      (with-current-buffer (process-buffer process)
-		(ditz-mode)
-		(goto-char (point-min))))))
+    (unless interactive
       (ditz-mode)
       (goto-char (point-min))))))
 
