@@ -169,10 +169,21 @@ must set it from minibuffer."
 (defun ditz-release ()
   "Mark release as released."
   (interactive)
-  (let ((release-name nil))
-    (setq release-name (ditz-extract-thing-at-point ditz-release-name-regex 1))
+  (let ((release-name (ditz-extract-release)))
     (when release-name
       (ditz-call-process "release" release-name "switch" t))))
+
+(defun ditz-extract-issue ()
+  (let ((issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1)))
+    (unless issue-id
+      (error "No issue on this line"))
+    issue-id))
+
+(defun ditz-extract-release ()
+  (let ((release (ditz-extract-thing-at-point ditz-release-name-regex 1)))
+    (unless release
+      (error "No release on this line"))
+    release))
 
 (defun ditz-extract-thing-at-point (regex n)
   (save-excursion
@@ -185,18 +196,15 @@ must set it from minibuffer."
       (when (string-match regex line)
         (match-string n line)))))
 
-(defun ditz-extract-issue ()
-  (let ((issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1)))
-    (unless issue-id
-      (error "No issue on this line"))
-    issue-id))
-
 (defun ditz-reload ()
   (interactive)
   (cond ((string= (buffer-name) "*ditz-todo*")
          (ditz-call-process "todo" nil "switch"))
         ((string= (buffer-name) "*ditz-status*")
          (ditz-call-process "status" nil "switch"))
+        ((string= (buffer-name) "*ditz-show*")
+	 (goto-char (point-min))
+         (ditz-call-process "show" (ditz-extract-issue) "switch"))
         ((string= (buffer-name) "*ditz-log*")
          (ditz-call-process "log" nil "switch"))))
 
@@ -208,16 +216,21 @@ must set it from minibuffer."
 (defun ditz-call-process (command &optional arg popup-flag interactive)
   "Invoke a ditz command."
 
-  (let* ((bufname (concat "*ditz-" command "*"))
+  (let* ((cmd (ditz-build-command command arg))
+	 (bufname (concat "*ditz-" command "*"))
 	 (buffer (get-buffer-create bufname))
          (proc (get-buffer-process buffer)))
+
+    (unless interactive
+      (kill-buffer buffer)
+      (setq buffer (get-buffer-create bufname)))
 
     (if (and interactive proc (eq (process-status proc) 'run))
         (when (y-or-n-p (format "A %s process is running; kill it?"
                                 (process-name proc)))
           (interrupt-process proc)
           (sit-for 1)
-          (delete-process proc))
+          (delete-process proc)))
 
     (with-current-buffer buffer
       (setq buffer-read-only nil)
@@ -226,12 +239,11 @@ must set it from minibuffer."
 
     (if interactive
 	(make-comint-in-buffer "ditz-call-process"
-			       buffer shell-file-name nil shell-command-switch
-			       (ditz-build-command command arg))
-      (call-process-shell-command (ditz-build-command command arg)
-				  nil buffer))
+			       buffer shell-file-name nil
+			       shell-command-switch cmd)
+      (call-process-shell-command cmd nil buffer))
 
-    (cond ((or (eq major-mode 'ditz-mode)
+    (cond((or (eq major-mode 'ditz-mode)
                (string= popup-flag "switch"))
 	   (switch-to-buffer buffer))
           ((string= popup-flag "pop")
@@ -243,7 +255,7 @@ must set it from minibuffer."
 
     (unless interactive
       (ditz-mode)
-      (goto-char (point-min))))))
+      (goto-char (point-min)))))
 
 (defvar ditz-last-visited-issue-directory nil)
 
