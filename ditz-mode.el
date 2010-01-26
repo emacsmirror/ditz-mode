@@ -198,12 +198,12 @@ must set it from minibuffer."
 
 (defun ditz-reload ()
   (interactive)
+  (goto-char (point-min))
   (cond ((string= (buffer-name) "*ditz-todo*")
          (ditz-call-process "todo" nil "switch"))
         ((string= (buffer-name) "*ditz-status*")
          (ditz-call-process "status" nil "switch"))
         ((string= (buffer-name) "*ditz-show*")
-	 (goto-char (point-min))
          (ditz-call-process "show" (ditz-extract-issue) "switch"))
         ((string= (buffer-name) "*ditz-log*")
          (ditz-call-process "log" nil "switch"))))
