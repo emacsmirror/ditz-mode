@@ -64,6 +64,12 @@ must set it from minibuffer."
 (defconst ditz-comment-regex "^ +>\\(.*\\)$"
   "Regex for comment.")
 
+(defconst ditz-feature-regex "(\\(feature\\))"
+  "Regex for feature indicator.")
+
+(defconst ditz-bug-regex "(\\(bug\\))"
+  "Regex for bug indicator.")
+
 ;; Commands
 (defun ditz-init ()
   "Initialize ditz issues."
@@ -130,12 +136,12 @@ must set it from minibuffer."
   (interactive)
   (let ((issue-id (ditz-extract-issue)))
     (save-excursion
-      (ditz-call-process "show" issue-id "switch")
+      (ditz-call-process "show" issue-id)
       (goto-char (point-min))
       (let ((beg (search-forward "Identifier: "))
 	    (end (line-end-position)))
 	(setq issue-id (buffer-substring-no-properties beg end))))
-    (message "Issue: " issue-id)))
+    (message "Issue: %s" issue-id)))
 
 (defun ditz-close ()
   "Close an issue."
@@ -344,16 +350,36 @@ must set it from minibuffer."
   "Face definition for comments."
   :group 'ditz)
 
+(defface ditz-feature-face
+  '((((class color) (background light))
+     (:foreground "dark green"))
+    (((class color) (background dark))
+     (:foreground "dark green")))
+  "Face definition for feature indicators."
+  :group 'ditz)
+
+(defface ditz-bug-face
+  '((((class color) (background light))
+     (:foreground "red"))
+    (((class color) (background dark))
+     (:foreground "red")))
+  "Face definition for bug indicators."
+  :group 'ditz)
+
 (defconst ditz-issue-id-face 'ditz-issue-id-face)
 (defconst ditz-issue-attr-face 'ditz-issue-attr-face)
 (defconst ditz-release-name-face 'ditz-release-name-face)
 (defconst ditz-comment-face 'ditz-comment-face)
+(defvar ditz-feature-face 'ditz-feature-face)
+(defconst ditz-bug-face 'ditz-bug-face)
 
 (defconst ditz-font-lock-keywords
   `((,ditz-issue-attr-regex (1 ditz-issue-attr-face t))
     (,ditz-issue-id-regex (1 ditz-issue-id-face t))
     (,ditz-release-name-regex (1 ditz-release-name-face t))
-    (,ditz-comment-regex (1 ditz-comment-face t))))
+    (,ditz-comment-regex (1 ditz-comment-face t))
+    (,ditz-feature-regex (1 ditz-feature-face t))
+    (,ditz-bug-regex (1 ditz-bug-face t))))
 
 ;; Ditz major mode
 (define-derived-mode ditz-mode fundamental-mode "Ditz"
