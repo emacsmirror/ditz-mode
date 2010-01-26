@@ -55,13 +55,13 @@ must set it from minibuffer."
 (defconst ditz-issue-id-regex "\\([a-z0-9]+-[0-9]+\\)"
   "Regex for issue id.")
 
-(defconst ditz-issue-attr-regex "^\s*\\([^ :\n]+\\): .*$"
+(defconst ditz-issue-attr-regex "^\s*\\([^:\n]+\\): .*$"
   "Regex for issue attribute.")
 
 (defconst ditz-release-name-regex "^\\([^ ]+\\) (.*$"
   "Regex for release name.")
 
-(defconst ditz-comment-regex "^ +\\(>.*\\)$"
+(defconst ditz-comment-regex "^ +>\\(.*\\)$"
   "Regex for comment.")
 
 ;; Commands
@@ -350,8 +350,8 @@ must set it from minibuffer."
 (defconst ditz-comment-face 'ditz-comment-face)
 
 (defconst ditz-font-lock-keywords
-  `((,ditz-issue-id-regex (1 ditz-issue-id-face t))
-    (,ditz-issue-attr-regex (1 ditz-issue-attr-face t))
+  `((,ditz-issue-attr-regex (1 ditz-issue-attr-face t))
+    (,ditz-issue-id-regex (1 ditz-issue-id-face t))
     (,ditz-release-name-regex (1 ditz-release-name-face t))
     (,ditz-comment-regex (1 ditz-comment-face t))))
 
