@@ -61,7 +61,7 @@ must set it from minibuffer."
 (defconst ditz-release-name-regex "^\\([^ ]+\\) (.*$"
   "Regex for release name.")
 
-(defconst ditz-comment-regex "^ +>\\(.*\\)$"
+(defconst ditz-comment-regex "^\s+\\(>.*\\)$"
   "Regex for comment.")
 
 (defconst ditz-feature-regex "(\\(feature\\))"
@@ -74,7 +74,7 @@ must set it from minibuffer."
 (defun ditz-init ()
   "Initialize ditz issues."
   (interactive)
-  (ditz-call-process "init" nil "pop"))
+  (ditz-call-process "init" nil "pop" t))
 
 (defun ditz-html ()
   "Generate html files of issues."
@@ -84,12 +84,12 @@ must set it from minibuffer."
 (defun ditz-add-release ()
   "Add a new release."
   (interactive)
-  (ditz-call-process "add-release" nil "pop"))
+  (ditz-call-process "add-release" nil "pop" t))
 
 (defun ditz-add ()
   "Add a new issue."
   (interactive)
-  (ditz-call-process "add" nil "pop"))
+  (ditz-call-process "add" nil "pop" t))
 
 (defun ditz-status ()
   "Show status of issues."
@@ -119,34 +119,35 @@ must set it from minibuffer."
 (defun ditz-assign ()
   "Assign issue to a release."
   (interactive)
-  (ditz-call-process "assign" (ditz-extract-issue) "switch"))
+  (ditz-call-process "assign" (ditz-extract-issue) "switch" t))
 
 (defun ditz-unassign ()
   "Unassign an issue."
   (interactive)
-  (ditz-call-process "unassign" (ditz-extract-issue) "switch"))
+  (ditz-call-process "unassign" (ditz-extract-issue) "switch" t))
 
 (defun ditz-comment ()
   "Comment on an issue."
   (interactive)
-  (ditz-call-process "comment" (ditz-extract-issue) "switch"))
+  (ditz-call-process "comment" (ditz-extract-issue) "switch" t))
 
 (defun ditz-edit ()
   "Edit issue details."
   (interactive)
-  (let ((issue-id (ditz-extract-issue)))
+  (let ((issue-id (ditz-extract-issue))
+	(issue-dir (ditz-issue-directory)))
+    (ditz-call-process "show" issue-id)
+    (goto-char (point-min))
     (save-excursion
-      (ditz-call-process "show" issue-id)
-      (goto-char (point-min))
       (let ((beg (search-forward "Identifier: "))
 	    (end (line-end-position)))
 	(setq issue-id (buffer-substring-no-properties beg end))))
-    (message "Issue: %s" issue-id)))
+    (find-file (ditz-issue-file issue-id))))
 
 (defun ditz-close ()
   "Close an issue."
   (interactive)
-  (ditz-call-process "close" (ditz-extract-issue) "switch"))
+  (ditz-call-process "close" (ditz-extract-issue) "switch" t))
 
 (defun ditz-drop ()
   "Drop an issue."
@@ -158,20 +159,20 @@ must set it from minibuffer."
 (defun ditz-start ()
   "Start work on an issue."
   (interactive)
-  (ditz-call-process "start" (ditz-extract-issue) "switch"))
+  (ditz-call-process "start" (ditz-extract-issue) "switch" t))
 
 (defun ditz-stop ()
   "Stop work on an issue."
   (interactive)
-  (ditz-call-process "stop" (ditz-extract-issue) "switch"))
+  (ditz-call-process "stop" (ditz-extract-issue) "switch" t))
 
 (defun ditz-release ()
-  "Mark issues as released."
+  "Mark release as released."
   (interactive)
   (let ((release-name nil))
     (setq release-name (ditz-extract-thing-at-point ditz-release-name-regex 1))
     (when release-name
-      (ditz-call-process "release" release-name "switch"))))
+      (ditz-call-process "release" release-name "switch" t))))
 
 (defun ditz-extract-thing-at-point (regex n)
   (save-excursion
@@ -204,7 +205,7 @@ must set it from minibuffer."
   (interactive)
   (quit-window))
 
-(defun ditz-call-process (command &optional arg popup-flag)
+(defun ditz-call-process (command &optional arg popup-flag interactive)
   "Call ditz process asynchronously according with sub-commands."
   (let* ((bufname (concat "*ditz-" command "*"))
 	 (buffer (get-buffer-create bufname))
@@ -222,9 +223,12 @@ must set it from minibuffer."
       (erase-buffer)
       (buffer-disable-undo (current-buffer)))
 
-    (make-comint-in-buffer "ditz-call-process"
-                           buffer shell-file-name nil shell-command-switch
-                           (ditz-build-command command arg))
+    (if interactive
+	(make-comint-in-buffer "ditz-call-process"
+			       buffer shell-file-name nil shell-command-switch
+			       (ditz-build-command command arg))
+      (call-process-shell-command (ditz-build-command command arg)
+				  nil buffer))
 
     (cond ((or (eq major-mode 'ditz-mode)
                (string= popup-flag "switch"))
@@ -236,17 +240,26 @@ must set it from minibuffer."
           (t
            (set-buffer buffer)))
 
-    (set-process-sentinel
-     (get-buffer-process buffer)
-     '(lambda (process signal)
-        (when (string= signal "finished\n")
-          (with-current-buffer (process-buffer process)
-	    (ditz-mode)
-            (goto-char (point-min)))))))))
+    (if interactive
+	(set-process-sentinel
+	 (get-buffer-process buffer)
+	 '(lambda (process signal)
+	    (when (string= signal "finished\n")
+	      (with-current-buffer (process-buffer process)
+		(ditz-mode)
+		(goto-char (point-min))))))
+      (ditz-mode)
+      (goto-char (point-min))))))
 
 (defvar ditz-last-visited-issue-directory nil)
 
-(defun ditz-build-command (command arg)
+(defun ditz-project-file ()
+  (concat (ditz-issue-directory) "/project.yaml"))
+
+(defun ditz-issue-file (id)
+  (concat (ditz-issue-directory) "/issue-" id ".yaml"))
+
+(defun ditz-issue-directory (&optional command)
   (let (issue-directory current-directory)
 
     ;; Reserve current directory to come back later.  It's needed when
@@ -267,7 +280,7 @@ must set it from minibuffer."
                           (t
                            (cd ".."))))))
            (setq issue-directory
-                            (concat default-directory ditz-issue-directory)))
+		 (concat default-directory ditz-issue-directory)))
           (t
            (setq issue-directory
                  (read-file-name "Issue dir: "
@@ -278,6 +291,10 @@ must set it from minibuffer."
     (when current-directory
       (setq default-directory current-directory))
 
+    issue-directory))
+
+(defun ditz-build-command (command arg)
+  (let ((issue-directory (ditz-issue-directory command)))
     (setq ditz-last-visited-issue-directory issue-directory)
     (mapconcat 'identity
                (list ditz-program "-i" issue-directory command arg) " ")))
@@ -317,7 +334,7 @@ must set it from minibuffer."
 (define-key ditz-mode-map "n" 'next-line)
 (define-key ditz-mode-map "p" 'previous-line)
 
-;; Face
+;; Faces.
 (defface ditz-issue-id-face
   '((((class color) (background light))
      (:foreground "blue" :weight bold))
@@ -381,7 +398,7 @@ must set it from minibuffer."
     (,ditz-feature-regex (1 ditz-feature-face t))
     (,ditz-bug-regex (1 ditz-bug-face t))))
 
-;; Ditz major mode
+;; Ditz major mode.
 (define-derived-mode ditz-mode fundamental-mode "Ditz"
   "Major mode Ditz information."
   (interactive)
