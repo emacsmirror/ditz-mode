@@ -94,7 +94,7 @@ must set it from minibuffer."
 (defun ditz-status ()
   "Show status of issues."
   (interactive)
-  (ditz-call-process "status" nil "display"))
+  (ditz-call-process "status" nil "switch"))
 
 (defun ditz-todo ()
   "Show current todo."
@@ -114,7 +114,7 @@ must set it from minibuffer."
 (defun ditz-show ()
   "Show issue details."
   (interactive)
-  (ditz-call-process "show" (ditz-extract-issue) "display"))
+  (ditz-call-process "show" (ditz-extract-issue) "switch"))
 
 (defun ditz-assign ()
   "Assign issue to a release."
@@ -129,7 +129,7 @@ must set it from minibuffer."
 (defun ditz-comment ()
   "Comment on an issue."
   (interactive)
-  (ditz-call-process "comment" (ditz-extract-issue) "switch" t))
+  (ditz-call-process "comment" (ditz-extract-issue) "pop" t))
 
 (defun ditz-edit ()
   "Edit issue details."
@@ -243,8 +243,7 @@ must set it from minibuffer."
 			       shell-command-switch cmd)
       (call-process-shell-command cmd nil buffer))
 
-    (cond((or (eq major-mode 'ditz-mode)
-               (string= popup-flag "switch"))
+    (cond ((string= popup-flag "switch")
 	   (switch-to-buffer buffer))
           ((string= popup-flag "pop")
            (pop-to-buffer buffer))
