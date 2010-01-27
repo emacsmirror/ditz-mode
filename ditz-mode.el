@@ -55,7 +55,9 @@ must set it from minibuffer."
 (defconst ditz-issue-id-regex "\\([a-z0-9]+-[0-9]+\\)"
   "Regex for issue id.")
 
-(defconst ditz-issue-attr-regex "^\s*\\([^:\n]+\\): .*$"
+(defconst ditz-issue-attr-regex
+  (concat (regexp-opt '("Title" "Description" "Type" "Status" "Creator"
+			"Age" "Release" "References" "Identifier") 'words) ":")
   "Regex for issue attribute.")
 
 (defconst ditz-release-name-regex "^\\([^ ]+\\) (.*$"
@@ -449,14 +451,26 @@ must set it from minibuffer."
 
 Calling this function invokes the function(s) listed in `ditz-mode-hook'
 before doing anything else."
+  :group 'ditz
+
   (interactive)
   (kill-all-local-variables)
+
+  ;; Become the current major mode.
   (setq major-mode 'ditz-mode)
   (setq mode-name "Ditz")
+
+  ;; Set readonly.
   (setq buffer-read-only t)
+
+  ;; Set up font lock.
+  (make-local-variable 'font-lock-defaults)
+  (setq font-lock-defaults '(ditz-font-lock-keywords t))
+
+  ;; Activate keymap.
   (use-local-map ditz-mode-map)
-  (set (make-local-variable 'font-lock-defaults)  '(ditz-font-lock-keywords))
-  (font-lock-mode 1)
+
+  ;; Run startup hooks.
   (run-hooks 'ditz-mode-hook))
 
 (provide 'ditz)
