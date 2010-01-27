@@ -105,7 +105,7 @@ must set it from minibuffer."
 (defun ditz-status ()
   "Show status of issues."
   (interactive)
-  (ditz-call-process "status" nil "switch"))
+  (ditz-call-process "status" nil "display"))
 
 (defun ditz-todo ()
   "Show current todo."
@@ -358,6 +358,7 @@ must set it from minibuffer."
 (define-key ditz-mode-map "a" 'ditz-assign)
 (define-key ditz-mode-map "u" 'ditz-unassign)
 (define-key ditz-mode-map "R" 'ditz-release)
+(define-key ditz-mode-map "S" 'ditz-status)
 (define-key ditz-mode-map "G" 'ditz-changelog)
 (define-key ditz-mode-map "$" 'ditz-archive)
 
@@ -392,6 +393,7 @@ must set it from minibuffer."
    ["Assign issue to release"           ditz-assign t]
    ["Unassign issue"                    ditz-unassign t]
    ["Release version"                   ditz-release t]
+   ["Show release status"               ditz-status t]
    ["Show release changelog"            ditz-changelog t]
    ["Archive a release"                 ditz-archive t]
    "---"
