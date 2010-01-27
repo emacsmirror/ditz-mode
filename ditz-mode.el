@@ -304,11 +304,11 @@ must set it from minibuffer."
     (mapconcat 'identity
                (list ditz-program "-i" issue-directory command arg) " ")))
 
-;; Hooks
+;; Hooks.
 (defvar ditz-mode-hook nil
   "*Hooks for Ditz major mode")
 
-;; Keymap
+;; Keymap.
 (defvar ditz-mode-map (make-keymap)
   "*Keymap for Ditz major mode")
 
@@ -338,6 +338,32 @@ must set it from minibuffer."
 
 (define-key ditz-mode-map "n" 'next-line)
 (define-key ditz-mode-map "p" 'previous-line)
+
+(define-key ditz-mode-map "h" 'describe-mode)
+
+(easy-menu-define ditz-mode-menu ditz-mode-map "Ditz mode menu"
+ '("Ditz"
+   ["Add new issue"           ditz-add t]
+   ["Show issue details"      ditz-show t]
+   ["Edit issue"              ditz-edit t]
+   ["Comment on issue"        ditz-comment t]
+   ["Start working on issue"  ditz-start t]
+   ["Stop working on issue"   ditz-stop t]
+   ["Close issue"             ditz-close t]
+   ["Drop issue"              ditz-drop t]
+   "---"
+   ["Add new release"         ditz-add-release t]
+   ["Assign issue to release" ditz-assign t]
+   ["Unassign issue"          ditz-unassign t]
+   ["Release version"         ditz-release t]
+   "---"
+   ["Show log"                ditz-log t]
+   ["Show short log"          ditz-shortlog t]
+   "---"
+   ["Generate HTML summary"   ditz-html t]
+   "---"
+   ["Refresh buffer"          ditz-reload t]
+   ["Close buffer"            ditz-close-buffer t]))
 
 ;; Faces.
 (defface ditz-issue-id-face
@@ -405,7 +431,12 @@ must set it from minibuffer."
 
 ;; Ditz major mode.
 (define-derived-mode ditz-mode fundamental-mode "Ditz"
-  "Major mode Ditz information."
+  "Major mode for the Ditz distributed issue tracker.
+
+\\{ditz-mode-map}
+
+Calling this function invokes the function(s) listed in `ditz-mode-hook'
+before doing anything else."
   (interactive)
   (kill-all-local-variables)
   (setq major-mode 'ditz-mode)
