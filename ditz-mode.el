@@ -362,10 +362,11 @@ must set it from minibuffer."
     issue-directory))
 
 (defun ditz-build-command (command arg)
-  (let ((issue-directory (ditz-issue-directory command)))
+  (let* ((issue-directory (ditz-issue-directory command))
+	 (quoted-directory (concat "\"" issue-directory "\"")))
     (setq ditz-last-visited-issue-directory issue-directory)
     (mapconcat 'identity
-               (list ditz-program "-i" issue-directory command arg) " ")))
+               (list ditz-program "-i" quoted-directory command arg) " ")))
 
 ;; Hooks.
 (defvar ditz-mode-hook nil
