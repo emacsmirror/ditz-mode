@@ -191,6 +191,12 @@ must set it from minibuffer."
       (ditz-call-process "archive" release-name "display")
       (ditz-reload))))
 
+(defun ditz-changelog ()
+  "Show change log for a release."
+  (interactive)
+  (let ((release-name (ditz-extract-release)))
+    (ditz-call-process "changelog" release-name "display")))
+
 (defun ditz-extract-issue ()
   (let ((issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1)))
     (unless issue-id
@@ -346,6 +352,7 @@ must set it from minibuffer."
 (define-key ditz-mode-map "a" 'ditz-assign)
 (define-key ditz-mode-map "u" 'ditz-unassign)
 (define-key ditz-mode-map "R" 'ditz-release)
+(define-key ditz-mode-map "G" 'ditz-changelog)
 (define-key ditz-mode-map "$" 'ditz-archive)
 
 (define-key ditz-mode-map "H" 'ditz-html)
@@ -378,6 +385,7 @@ must set it from minibuffer."
    ["Assign issue to release" ditz-assign t]
    ["Unassign issue"          ditz-unassign t]
    ["Release version"         ditz-release t]
+   ["Show release changelog"  ditz-changelog t]
    ["Archive a release"       ditz-archive t]
    "---"
    ["Generate HTML summary"   ditz-html t]
