@@ -110,7 +110,7 @@ must set it from minibuffer."
 (defun ditz-todo ()
   "Show current todo."
   (interactive)
-  (ditz-call-process "todo" nil "pop"))
+  (ditz-call-process "todo" nil "switch"))
 
 (defun ditz-log ()
   "Show log of recent activities."
@@ -126,6 +126,13 @@ must set it from minibuffer."
   "Show issue details."
   (interactive)
   (ditz-call-process "show" (ditz-extract-issue) "switch"))
+
+(defun ditz-show-other-window ()
+  "Show issue details in another window."
+  (interactive)
+  (let ((issue-id (ditz-extract-issue t)))
+    (when issue-id
+      (ditz-call-process "show" issue-id "display-ditz"))))
 
 (defun ditz-grep (regexp)
   "Show issue details."
@@ -207,15 +214,15 @@ must set it from minibuffer."
   (let ((release-name (ditz-extract-release)))
     (ditz-call-process "changelog" release-name "display")))
 
-(defun ditz-extract-issue ()
+(defun ditz-extract-issue (&optional noerror)
   (let ((issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1)))
-    (unless issue-id
+    (unless (or issue-id noerror)
       (error "No issue on this line"))
     issue-id))
 
-(defun ditz-extract-release ()
+(defun ditz-extract-release (&optional noerror)
   (let ((release (ditz-extract-thing-at-point ditz-release-name-regex 1)))
-    (unless release
+    (unless (or release noerror)
       (error "No release on this line"))
     release))
 
@@ -230,6 +237,16 @@ must set it from minibuffer."
       (when (string-match regex line)
         (match-string n line)))))
 
+(defun ditz-next-line ()
+  (interactive)
+  (next-line)
+  (ditz-show-other-window))
+
+(defun ditz-previous-line ()
+  (interactive)
+  (previous-line)
+  (ditz-show-other-window))
+
 (defun ditz-reload ()
   (interactive)
   (goto-char (point-min))
@@ -239,13 +256,18 @@ must set it from minibuffer."
          (ditz-call-process "status" nil "switch"))
         ((string= (buffer-name) "*ditz-show*")
          (ditz-call-process "show" (ditz-extract-issue) "switch"))
+        ((string= (buffer-name) "*ditz-shortlog*")
+	 (ditz-call-process "shortlog" nil "switch"))
         ((string= (buffer-name) "*ditz-log*")
          (ditz-call-process "log" nil "switch"))))
 
-(defun ditz-close-buffer ()
-  "Close ditz buffer."
+(defun ditz-quit ()
+  "Bury all Ditz buffers."
   (interactive)
-  (quit-window))
+  (dolist (name '("todo" "status" "show" "shortlog" "log"))
+    (with-current-buffer (concat "*ditz-" name "*")
+      (bury-buffer (current-buffer))
+      (replace-buffer-in-windows))))
 
 (defun ditz-call-process (command &optional arg popup-flag interactive)
   "Invoke a ditz command."
@@ -283,10 +305,15 @@ must set it from minibuffer."
            (pop-to-buffer buffer))
           ((string= popup-flag "display")
            (display-buffer buffer))
+          ((string= popup-flag "display-ditz")
+	   (with-current-buffer buffer
+	     (ditz-mode)
+	     (goto-char (point-min)))
+           (display-buffer buffer))
           (t
            (set-buffer buffer)))
 
-    (unless interactive
+    (when (and (not interactive) (eq buffer (current-buffer)))
       (ditz-mode)
       (goto-char (point-min)))))
 
@@ -372,10 +399,10 @@ must set it from minibuffer."
 (define-key ditz-mode-map "B" 'ditz-html-browse)
 
 (define-key ditz-mode-map "g" 'ditz-reload)
-(define-key ditz-mode-map "q" 'ditz-close-buffer)
+(define-key ditz-mode-map "q" 'ditz-quit)
 
-(define-key ditz-mode-map "n" 'next-line)
-(define-key ditz-mode-map "p" 'previous-line)
+(define-key ditz-mode-map "n" 'ditz-next-line)
+(define-key ditz-mode-map "p" 'ditz-previous-line)
 
 (define-key ditz-mode-map "h" 'describe-mode)
 
@@ -408,7 +435,7 @@ must set it from minibuffer."
    ["Browse HTML summary"               ditz-html-browse t]
    "---"
    ["Refresh buffer"                    ditz-reload t]
-   ["Close buffer"                      ditz-close-buffer t]))
+   ["Quit"                              ditz-quit t]))
 
 ;; Faces.
 (defface ditz-issue-id-face
