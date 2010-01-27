@@ -30,7 +30,7 @@
   :prefix "ditz-"
   :group 'tools)
 
-;; Customizable variables
+;; Customizable variables.
 (defcustom ditz-program "ditz"
   "Ditz command"
   :type 'string
@@ -51,7 +51,7 @@ must set it from minibuffer."
   :type 'boolean
   :group 'ditz)
 
-;; Constant variables
+;; Constant variables.
 (defconst ditz-issue-id-regex "\\([a-z0-9]+-[0-9]+\\)"
   "Regex for issue id.")
 
@@ -70,16 +70,25 @@ must set it from minibuffer."
 (defconst ditz-bug-regex "(\\(bug\\))"
   "Regex for bug indicator.")
 
-;; Commands
+;; Commands.
 (defun ditz-init ()
   "Initialize ditz issues."
   (interactive)
   (ditz-call-process "init" nil "pop" t))
 
 (defun ditz-html ()
-  "Generate html files of issues."
+  "Generate HTML files of issues."
   (interactive)
-  (ditz-call-process "html" nil "display"))
+  (ditz-call-process "html" nil)
+  (when (search-forward "URL: " nil t)
+    (let ((url (buffer-substring (point) (line-end-position))))
+      (message "Generated HTML in %s" url)
+      url)))
+
+(defun ditz-html-browse ()
+  "Generate and browse HTML files of issues."
+  (interactive)
+  (browse-url-of-file (ditz-html)))
 
 (defun ditz-add-release ()
   "Add a new release."
@@ -320,6 +329,7 @@ must set it from minibuffer."
 (define-key ditz-mode-map "D" 'ditz-drop)
 (define-key ditz-mode-map "C" 'ditz-close)
 (define-key ditz-mode-map "H" 'ditz-html)
+(define-key ditz-mode-map "B" 'ditz-html-browse)
 
 (define-key ditz-mode-map "a" 'ditz-assign)
 (define-key ditz-mode-map "u" 'ditz-unassign)
@@ -341,6 +351,7 @@ must set it from minibuffer."
 
 (define-key ditz-mode-map "h" 'describe-mode)
 
+;; Easymenu.
 (easy-menu-define ditz-mode-menu ditz-mode-map "Ditz mode menu"
  '("Ditz"
    ["Add new issue"           ditz-add t]
@@ -361,6 +372,7 @@ must set it from minibuffer."
    ["Show short log"          ditz-shortlog t]
    "---"
    ["Generate HTML summary"   ditz-html t]
+   ["Browse HTML summary"     ditz-html-browse t]
    "---"
    ["Refresh buffer"          ditz-reload t]
    ["Close buffer"            ditz-close-buffer t]))
