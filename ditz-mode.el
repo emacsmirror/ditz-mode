@@ -181,8 +181,15 @@ must set it from minibuffer."
   "Mark release as released."
   (interactive)
   (let ((release-name (ditz-extract-release)))
-    (when release-name
-      (ditz-call-process "release" release-name "switch" t))))
+    (ditz-call-process "release" release-name "switch" t)))
+
+(defun ditz-archive ()
+  "Archive a release."
+  (interactive)
+  (let ((release-name (ditz-extract-release)))
+    (when (yes-or-no-p (concat "Archive " release-name " "))
+      (ditz-call-process "archive" release-name "display")
+      (ditz-reload))))
 
 (defun ditz-extract-issue ()
   (let ((issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1)))
@@ -339,6 +346,7 @@ must set it from minibuffer."
 (define-key ditz-mode-map "a" 'ditz-assign)
 (define-key ditz-mode-map "u" 'ditz-unassign)
 (define-key ditz-mode-map "R" 'ditz-release)
+(define-key ditz-mode-map "$" 'ditz-archive)
 
 (define-key ditz-mode-map "H" 'ditz-html)
 (define-key ditz-mode-map "B" 'ditz-html-browse)
@@ -370,6 +378,7 @@ must set it from minibuffer."
    ["Assign issue to release" ditz-assign t]
    ["Unassign issue"          ditz-unassign t]
    ["Release version"         ditz-release t]
+   ["Archive a release"       ditz-archive t]
    "---"
    ["Generate HTML summary"   ditz-html t]
    ["Browse HTML summary"     ditz-html-browse t]
