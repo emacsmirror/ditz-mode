@@ -324,27 +324,25 @@ must set it from minibuffer."
   "*Keymap for Ditz major mode")
 
 (define-key ditz-mode-map " " 'ditz-show)
-(define-key ditz-mode-map "s" 'ditz-show)
-
-(define-key ditz-mode-map "A" 'ditz-add)
-(define-key ditz-mode-map "R" 'ditz-add-release)
-(define-key ditz-mode-map "D" 'ditz-drop)
-(define-key ditz-mode-map "C" 'ditz-close)
-(define-key ditz-mode-map "H" 'ditz-html)
-(define-key ditz-mode-map "B" 'ditz-html-browse)
-
-(define-key ditz-mode-map "a" 'ditz-assign)
-(define-key ditz-mode-map "u" 'ditz-unassign)
-(define-key ditz-mode-map "e" 'ditz-edit)
-(define-key ditz-mode-map "c" 'ditz-comment)
-
-(define-key ditz-mode-map "<" 'ditz-start)
-(define-key ditz-mode-map ">" 'ditz-stop)
-
 (define-key ditz-mode-map "l" 'ditz-shortlog)
 (define-key ditz-mode-map "L" 'ditz-log)
 
-(define-key ditz-mode-map "r" 'ditz-release)
+(define-key ditz-mode-map "A" 'ditz-add)
+(define-key ditz-mode-map "c" 'ditz-comment)
+(define-key ditz-mode-map "<" 'ditz-start)
+(define-key ditz-mode-map ">" 'ditz-stop)
+(define-key ditz-mode-map "e" 'ditz-edit)
+(define-key ditz-mode-map "C" 'ditz-close)
+(define-key ditz-mode-map "D" 'ditz-drop)
+
+(define-key ditz-mode-map "r" 'ditz-add-release)
+(define-key ditz-mode-map "a" 'ditz-assign)
+(define-key ditz-mode-map "u" 'ditz-unassign)
+(define-key ditz-mode-map "R" 'ditz-release)
+
+(define-key ditz-mode-map "H" 'ditz-html)
+(define-key ditz-mode-map "B" 'ditz-html-browse)
+
 (define-key ditz-mode-map "g" 'ditz-reload)
 (define-key ditz-mode-map "q" 'ditz-close-buffer)
 
@@ -356,12 +354,15 @@ must set it from minibuffer."
 ;; Easymenu.
 (easy-menu-define ditz-mode-menu ditz-mode-map "Ditz mode menu"
  '("Ditz"
-   ["Add new issue"           ditz-add t]
    ["Show issue details"      ditz-show t]
-   ["Edit issue"              ditz-edit t]
+   ["Show short log"          ditz-shortlog t]
+   ["Show detailed log"       ditz-log t]
+   "---"
+   ["Add new issue"           ditz-add t]
    ["Comment on issue"        ditz-comment t]
    ["Start working on issue"  ditz-start t]
    ["Stop working on issue"   ditz-stop t]
+   ["Edit issue"              ditz-edit t]
    ["Close issue"             ditz-close t]
    ["Drop issue"              ditz-drop t]
    "---"
@@ -369,9 +370,6 @@ must set it from minibuffer."
    ["Assign issue to release" ditz-assign t]
    ["Unassign issue"          ditz-unassign t]
    ["Release version"         ditz-release t]
-   "---"
-   ["Show log"                ditz-log t]
-   ["Show short log"          ditz-shortlog t]
    "---"
    ["Generate HTML summary"   ditz-html t]
    ["Browse HTML summary"     ditz-html-browse t]
