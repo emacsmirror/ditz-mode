@@ -182,6 +182,11 @@ must set it from minibuffer."
   (interactive)
   (ditz-call-process "stop" (ditz-extract-issue) "switch" t))
 
+(defun ditz-set-component ()
+  "Set an issue's component."
+  (interactive)
+  (ditz-call-process "set-component" (ditz-extract-issue) "switch" t))
+
 (defun ditz-release ()
   "Mark release as released."
   (interactive)
@@ -350,7 +355,8 @@ must set it from minibuffer."
 (define-key ditz-mode-map "c" 'ditz-comment)
 (define-key ditz-mode-map "<" 'ditz-start)
 (define-key ditz-mode-map ">" 'ditz-stop)
-(define-key ditz-mode-map "e" 'ditz-edit)
+(define-key ditz-mode-map "O" 'ditz-set-component)
+(define-key ditz-mode-map "E" 'ditz-edit)
 (define-key ditz-mode-map "C" 'ditz-close)
 (define-key ditz-mode-map "D" 'ditz-drop)
 
@@ -385,6 +391,7 @@ must set it from minibuffer."
    ["Comment on issue"                  ditz-comment t]
    ["Start working on issue"            ditz-start t]
    ["Stop working on issue"             ditz-stop t]
+   ["Set an issue's component"          ditz-set-component t]
    ["Edit issue"                        ditz-edit t]
    ["Close issue"                       ditz-close t]
    ["Drop issue"                        ditz-drop t]
