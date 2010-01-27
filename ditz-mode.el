@@ -265,9 +265,11 @@ must set it from minibuffer."
   "Bury all Ditz buffers."
   (interactive)
   (dolist (name '("todo" "status" "show" "shortlog" "log"))
-    (with-current-buffer (concat "*ditz-" name "*")
-      (bury-buffer (current-buffer))
-      (replace-buffer-in-windows))))
+    (let ((buffer (get-buffer (concat "*ditz-" name "*"))))
+      (when buffer
+	(with-current-buffer buffer
+	  (bury-buffer (current-buffer))
+	  (replace-buffer-in-windows))))))
 
 (defun ditz-call-process (command &optional arg popup-flag interactive)
   "Invoke a ditz command."
