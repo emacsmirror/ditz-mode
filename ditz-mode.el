@@ -432,7 +432,7 @@ must set it from minibuffer."
 (defconst ditz-issue-attr-face 'ditz-issue-attr-face)
 (defconst ditz-release-name-face 'ditz-release-name-face)
 (defconst ditz-comment-face 'ditz-comment-face)
-(defvar ditz-feature-face 'ditz-feature-face)
+(defconst ditz-feature-face 'ditz-feature-face)
 (defconst ditz-bug-face 'ditz-bug-face)
 
 (defconst ditz-font-lock-keywords
