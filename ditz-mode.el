@@ -127,6 +127,11 @@ must set it from minibuffer."
   (interactive)
   (ditz-call-process "show" (ditz-extract-issue) "switch"))
 
+(defun ditz-grep (regexp)
+  "Show issue details."
+  (interactive "sShow issues matching regexp: ")
+  (ditz-call-process "grep" regexp "switch"))
+
 (defun ditz-assign ()
   "Assign issue to a release."
   (interactive)
@@ -339,6 +344,7 @@ must set it from minibuffer."
 (define-key ditz-mode-map " " 'ditz-show)
 (define-key ditz-mode-map "l" 'ditz-shortlog)
 (define-key ditz-mode-map "L" 'ditz-log)
+(define-key ditz-mode-map "/" 'ditz-grep)
 
 (define-key ditz-mode-map "A" 'ditz-add)
 (define-key ditz-mode-map "c" 'ditz-comment)
@@ -369,30 +375,31 @@ must set it from minibuffer."
 ;; Easymenu.
 (easy-menu-define ditz-mode-menu ditz-mode-map "Ditz mode menu"
  '("Ditz"
-   ["Show issue details"      ditz-show t]
-   ["Show short log"          ditz-shortlog t]
-   ["Show detailed log"       ditz-log t]
+   ["Show issue details"                ditz-show t]
+   ["Show short log"                    ditz-shortlog t]
+   ["Show detailed log"                 ditz-log t]
+   ["Show issues matching regexp"       ditz-grep t]
    "---"
-   ["Add new issue"           ditz-add t]
-   ["Comment on issue"        ditz-comment t]
-   ["Start working on issue"  ditz-start t]
-   ["Stop working on issue"   ditz-stop t]
-   ["Edit issue"              ditz-edit t]
-   ["Close issue"             ditz-close t]
-   ["Drop issue"              ditz-drop t]
+   ["Add new issue"                     ditz-add t]
+   ["Comment on issue"                  ditz-comment t]
+   ["Start working on issue"            ditz-start t]
+   ["Stop working on issue"             ditz-stop t]
+   ["Edit issue"                        ditz-edit t]
+   ["Close issue"                       ditz-close t]
+   ["Drop issue"                        ditz-drop t]
    "---"
-   ["Add new release"         ditz-add-release t]
-   ["Assign issue to release" ditz-assign t]
-   ["Unassign issue"          ditz-unassign t]
-   ["Release version"         ditz-release t]
-   ["Show release changelog"  ditz-changelog t]
-   ["Archive a release"       ditz-archive t]
+   ["Add new release"                   ditz-add-release t]
+   ["Assign issue to release"           ditz-assign t]
+   ["Unassign issue"                    ditz-unassign t]
+   ["Release version"                   ditz-release t]
+   ["Show release changelog"            ditz-changelog t]
+   ["Archive a release"                 ditz-archive t]
    "---"
-   ["Generate HTML summary"   ditz-html t]
-   ["Browse HTML summary"     ditz-html-browse t]
+   ["Generate HTML summary"             ditz-html t]
+   ["Browse HTML summary"               ditz-html-browse t]
    "---"
-   ["Refresh buffer"          ditz-reload t]
-   ["Close buffer"            ditz-close-buffer t]))
+   ["Refresh buffer"                    ditz-reload t]
+   ["Close buffer"                      ditz-close-buffer t]))
 
 ;; Faces.
 (defface ditz-issue-id-face
