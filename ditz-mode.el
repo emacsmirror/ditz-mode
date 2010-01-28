@@ -194,6 +194,11 @@ must set it from minibuffer."
   (interactive)
   (ditz-call-process "set-component" (ditz-extract-issue) "switch" t))
 
+(defun ditz-add-reference ()
+  "Add an issue reference."
+  (interactive)
+  (ditz-call-process "add-reference" (ditz-extract-issue) "switch" t))
+
 (defun ditz-release ()
   "Mark release as released."
   (interactive)
@@ -359,7 +364,7 @@ must set it from minibuffer."
     (when current-directory
       (setq default-directory current-directory))
 
-    issue-directory))
+    (expand-file-name issue-directory)))
 
 (defun ditz-build-command (command arg)
   (let* ((issue-directory (ditz-issue-directory command))
@@ -385,6 +390,7 @@ must set it from minibuffer."
 (define-key ditz-mode-map "c" 'ditz-comment)
 (define-key ditz-mode-map "<" 'ditz-start)
 (define-key ditz-mode-map ">" 'ditz-stop)
+(define-key ditz-mode-map "F" 'ditz-add-reference)
 (define-key ditz-mode-map "O" 'ditz-set-component)
 (define-key ditz-mode-map "E" 'ditz-edit)
 (define-key ditz-mode-map "C" 'ditz-close)
@@ -422,6 +428,7 @@ must set it from minibuffer."
    ["Start working on issue"            ditz-start t]
    ["Stop working on issue"             ditz-stop t]
    ["Set an issue's component"          ditz-set-component t]
+   ["Add an issue reference"            ditz-add-reference t]
    ["Edit issue"                        ditz-edit t]
    ["Close issue"                       ditz-close t]
    ["Drop issue"                        ditz-drop t]
