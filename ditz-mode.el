@@ -505,9 +505,9 @@ must set it from minibuffer."
 
 (defconst ditz-font-lock-keywords
   `((,ditz-issue-attr-regex (1 ditz-issue-attr-face t))
+    (,ditz-comment-regex (1 ditz-comment-face t))
     (,ditz-issue-id-regex (1 ditz-issue-id-face t))
     (,ditz-release-name-regex (1 ditz-release-name-face t))
-    (,ditz-comment-regex (1 ditz-comment-face t))
     (,ditz-feature-regex (1 ditz-feature-face t))
     (,ditz-bug-regex (1 ditz-bug-face t))))
 
