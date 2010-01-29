@@ -272,9 +272,14 @@ must set it from minibuffer."
          (ditz-call-process "log" nil "switch"))))
 
 (defun ditz-quit ()
+  "Bury current Ditz buffer."
+  (interactive)
+  (bury-buffer))
+
+(defun ditz-quit-all ()
   "Bury all Ditz buffers."
   (interactive)
-  (dolist (name '("todo" "status" "show" "shortlog" "log"))
+  (dolist (name '("todo" "status" "show" "shortlog" "log" "grep"))
     (let ((buffer (get-buffer (concat "*ditz-" name "*"))))
       (when buffer
 	(with-current-buffer buffer
@@ -415,6 +420,7 @@ must set it from minibuffer."
 
 (define-key ditz-mode-map "g" 'ditz-reload)
 (define-key ditz-mode-map "q" 'ditz-quit)
+(define-key ditz-mode-map "Q" 'ditz-quit-all)
 
 (define-key ditz-mode-map "n" 'ditz-next-line)
 (define-key ditz-mode-map "p" 'ditz-previous-line)
@@ -452,7 +458,8 @@ must set it from minibuffer."
    ["Browse HTML summary"               ditz-html-browse t]
    "---"
    ["Refresh buffer"                    ditz-reload t]
-   ["Quit"                              ditz-quit t]))
+   ["Quit Ditz buffer"                  ditz-quit t]
+   ["Quit all Ditz buffers"             ditz-quit-all t]))
 
 ;; Faces.
 (defface ditz-issue-id-face
