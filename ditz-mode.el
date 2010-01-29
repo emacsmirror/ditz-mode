@@ -167,6 +167,11 @@ must set it from minibuffer."
 	(setq issue-id (buffer-substring-no-properties beg end))))
     (find-file (ditz-issue-file issue-id))))
 
+(defun ditz-edit-project ()
+  "Edit the project file."
+  (interactive)
+  (find-file (ditz-project-file)))
+
 (defun ditz-close ()
   "Close an issue."
   (interactive)
@@ -403,6 +408,7 @@ must set it from minibuffer."
 (define-key ditz-mode-map "S" 'ditz-status)
 (define-key ditz-mode-map "G" 'ditz-changelog)
 (define-key ditz-mode-map "$" 'ditz-archive)
+(define-key ditz-mode-map "P" 'ditz-edit-project)
 
 (define-key ditz-mode-map "H" 'ditz-html)
 (define-key ditz-mode-map "B" 'ditz-html-browse)
@@ -440,6 +446,7 @@ must set it from minibuffer."
    ["Show release status"               ditz-status t]
    ["Show release changelog"            ditz-changelog t]
    ["Archive a release"                 ditz-archive t]
+   ["Edit project file"                 ditz-edit-project t]
    "---"
    ["Generate HTML summary"             ditz-html t]
    ["Browse HTML summary"               ditz-html-browse t]
