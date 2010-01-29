@@ -137,7 +137,7 @@ must set it from minibuffer."
 (defun ditz-grep (regexp)
   "Show issue details."
   (interactive "sShow issues matching regexp: ")
-  (ditz-call-process "grep" regexp "switch"))
+  (ditz-call-process "grep" regexp "pop"))
 
 (defun ditz-assign ()
   "Assign issue to a release."
@@ -279,6 +279,7 @@ must set it from minibuffer."
 (defun ditz-quit-all ()
   "Bury all Ditz buffers."
   (interactive)
+  (delete-other-windows)
   (dolist (name '("todo" "status" "show" "shortlog" "log" "grep"))
     (let ((buffer (get-buffer (concat "*ditz-" name "*"))))
       (when buffer
