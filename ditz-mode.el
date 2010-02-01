@@ -219,7 +219,7 @@ With arg, show done things as well."
   "Archive a release."
   (interactive)
   (let ((release-name (ditz-extract-release)))
-    (when (yes-or-no-p (concat "Archive " release-name " "))
+    (when (yes-or-no-p (concat "Archive release " release-name "? "))
       (ditz-call-process "archive" release-name "display")
       (ditz-reload))))
 
