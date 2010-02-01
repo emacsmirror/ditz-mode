@@ -72,6 +72,9 @@ must set it from minibuffer."
 (defconst ditz-bug-regex "(\\(bug\\))"
   "Regex for bug indicator.")
 
+(defvar ditz-todo-flags nil
+  "Flags to pass to ditz-todo.")
+
 ;; Commands.
 (defun ditz-init ()
   "Initialize ditz issues."
@@ -107,10 +110,12 @@ must set it from minibuffer."
   (interactive)
   (ditz-call-process "status" nil "display"))
 
-(defun ditz-todo ()
-  "Show current todo."
-  (interactive)
-  (ditz-call-process "todo" nil "switch"))
+(defun ditz-todo (show-all)
+  "Show current todo list.
+With arg, show done things as well."
+  (interactive "P")
+  (setq ditz-todo-flags (if show-all "-a" nil))
+  (ditz-call-process "todo" ditz-todo-flags "switch"))
 
 (defun ditz-log ()
   "Show log of recent activities."
@@ -261,7 +266,7 @@ must set it from minibuffer."
   (interactive)
   (goto-char (point-min))
   (cond ((string= (buffer-name) "*ditz-todo*")
-         (ditz-call-process "todo" nil "switch"))
+         (ditz-call-process "todo" ditz-todo-flags "switch"))
         ((string= (buffer-name) "*ditz-status*")
          (ditz-call-process "status" nil "switch"))
         ((string= (buffer-name) "*ditz-show*")
