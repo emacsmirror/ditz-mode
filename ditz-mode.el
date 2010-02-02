@@ -72,8 +72,11 @@ must set it from minibuffer."
 (defconst ditz-bug-regex "(\\(bug\\))"
   "Regex for bug indicator.")
 
-(defvar ditz-todo-flags nil
+(defvar ditz-todo-flags ""
   "Flags to pass to ditz-todo.")
+
+(defvar ditz-todo-release ""
+  "Release specified by ditz-todo.")
 
 ;; Commands.
 (defun ditz-init ()
@@ -110,12 +113,14 @@ must set it from minibuffer."
   (interactive)
   (ditz-call-process "status" nil "display"))
 
-(defun ditz-todo (show-all)
-  "Show current todo list.
-With arg, show done things as well."
-  (interactive "P")
-  (setq ditz-todo-flags (if show-all "-a" nil))
-  (ditz-call-process "todo" ditz-todo-flags "switch"))
+(defun ditz-todo ()
+  "Show current todo list."
+  (interactive)
+  (ditz-call-process "todo" (ditz-todo-args) "switch"))
+
+(defun ditz-todo-args ()
+  "Return current ditz todo arguments."
+  (format "%s %s" ditz-todo-flags ditz-todo-release))
 
 (defun ditz-log ()
   "Show log of recent activities."
@@ -215,6 +220,36 @@ With arg, show done things as well."
   (let ((release-name (ditz-extract-release)))
     (ditz-call-process "release" release-name "switch" t)))
 
+(defun ditz-toggle-status ()
+  "Show/hide by issue status."
+  (interactive)
+  (if (string= ditz-todo-flags "")
+      (setq ditz-todo-flags "-a")
+    (setq ditz-todo-flags ""))
+  (ditz-toggle-message)
+  (ditz-reload))
+
+(defun ditz-toggle-release ()
+  "Show/hide by release."
+  (interactive)
+  (if (string= ditz-todo-release "")
+      (setq ditz-todo-release (ditz-extract-release))
+    (setq ditz-todo-release ""))
+  (ditz-toggle-message)
+  (ditz-reload))
+
+(defun ditz-toggle-message ()
+  "Give message based on current display settings."
+  (message
+   (mapconcat 'identity
+	      (list "Showing"
+		    (if (string= ditz-todo-flags "")
+			"unresolved" "all")
+		    "issues"
+		    (if (string= ditz-todo-release "")
+			"" (format "assigned to release %s" ditz-todo-release)))
+	      " ")))
+
 (defun ditz-archive ()
   "Archive a release."
   (interactive)
@@ -266,7 +301,7 @@ With arg, show done things as well."
   (interactive)
   (goto-char (point-min))
   (cond ((string= (buffer-name) "*ditz-todo*")
-         (ditz-call-process "todo" ditz-todo-flags "switch"))
+         (ditz-call-process "todo" (ditz-todo-args) "switch"))
         ((string= (buffer-name) "*ditz-status*")
          (ditz-call-process "status" nil "switch"))
         ((string= (buffer-name) "*ditz-show*")
@@ -421,6 +456,9 @@ With arg, show done things as well."
 (define-key ditz-mode-map "$" 'ditz-archive)
 (define-key ditz-mode-map "P" 'ditz-edit-project)
 
+(define-key ditz-mode-map "," 'ditz-toggle-status)
+(define-key ditz-mode-map "." 'ditz-toggle-release)
+
 (define-key ditz-mode-map "H" 'ditz-html)
 (define-key ditz-mode-map "B" 'ditz-html-browse)
 
@@ -459,6 +497,9 @@ With arg, show done things as well."
    ["Show release changelog"            ditz-changelog t]
    ["Archive a release"                 ditz-archive t]
    ["Edit project file"                 ditz-edit-project t]
+   "---"
+   ["Show/hide by issue status"         ditz-toggle-status t]
+   ["Show/hide by release"              ditz-toggle-release t]
    "---"
    ["Generate HTML summary"             ditz-html t]
    ["Browse HTML summary"               ditz-html-browse t]
