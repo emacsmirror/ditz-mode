@@ -51,7 +51,7 @@ must set it from minibuffer."
   :type 'boolean
   :group 'ditz)
 
-;; Constant variables.
+;; Constants.
 (defconst ditz-issue-id-regex "\\([a-z0-9]+-[0-9]+\\)"
   "Regex for issue id.")
 
@@ -59,6 +59,15 @@ must set it from minibuffer."
   (concat (regexp-opt '("Title" "Description" "Type" "Status" "Creator"
 			"Age" "Release" "References" "Identifier") 'words) ":")
   "Regex for issue attribute.")
+
+(defconst ditz-issue-status-regex
+  (concat (regexp-opt '("unstarted" "in_progress" "fixed" "wontfix"
+			"reorg") 'words) ":")
+  "Regex for issue status.")
+
+(defconst ditz-log-attr-regex
+  (concat (regexp-opt '("date" "author" "issue") 'words) " *:")
+  "Regex for log attribute.")
 
 (defconst ditz-release-name-regex "^\\([^ ]+\\) (.*$"
   "Regex for release name.")
@@ -72,6 +81,7 @@ must set it from minibuffer."
 (defconst ditz-bug-regex "(\\(bug\\))"
   "Regex for bug indicator.")
 
+;; Variables.
 (defvar ditz-todo-flags ""
   "Flags to pass to ditz-todo.")
 
@@ -535,9 +545,9 @@ must set it from minibuffer."
 
 (defface ditz-comment-face
   '((((class color) (background light))
-     (:foreground "dim gray"))
+     (:foreground "dim gray" :slant italic))
     (((class color) (background dark))
-     (:foreground "dim gray")))
+     (:foreground "dim gray" :slant italic)))
   "Face definition for comments."
   :group 'ditz)
 
@@ -564,8 +574,9 @@ must set it from minibuffer."
 (defconst ditz-feature-face 'ditz-feature-face)
 (defconst ditz-bug-face 'ditz-bug-face)
 
-(defconst ditz-font-lock-keywords
+(defvar ditz-font-lock-keywords
   `((,ditz-issue-attr-regex (1 ditz-issue-attr-face t))
+    (,ditz-log-attr-regex (1 ditz-issue-attr-face t))
     (,ditz-comment-regex (1 ditz-comment-face t))
     (,ditz-issue-id-regex (1 ditz-issue-id-face t))
     (,ditz-release-name-regex (1 ditz-release-name-face t))
