@@ -52,7 +52,7 @@ must set it from minibuffer."
   :group 'ditz)
 
 ;; Constants.
-(defconst ditz-issue-id-regex "\\([a-z0-9]+-[0-9]+\\)"
+(defconst ditz-issue-id-regex "\\([a-z]+-[0-9]+\\)"
   "Regex for issue id.")
 
 (defconst ditz-issue-attr-regex
