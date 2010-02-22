@@ -394,38 +394,31 @@ must set it from minibuffer."
   (concat (ditz-issue-directory) "/issue-" id ".yaml"))
 
 (defun ditz-issue-directory (&optional command)
-  (let (issue-directory current-directory)
-
-    ;; Reserve current directory to come back later.  It's needed when
-    ;; automatically finding directory.
-    (when buffer-file-name
-      (setq current-directory (file-name-directory (buffer-file-name))))
+  (let ((curdir (expand-file-name (file-name-directory default-directory)))
+	(issuedir nil))
 
     (cond ((eq major-mode 'ditz-mode)
-           (setq issue-directory ditz-last-visited-issue-directory))
+           (setq issuedir ditz-last-visited-issue-directory))
           ((and (not (string= command "init"))
                 ditz-find-issue-directory-automatically-flag
                 (catch 'loop
                   (while t
-                    (cond ((file-exists-p ditz-issue-directory)
+                    (cond ((file-exists-p
+			    (concat curdir "/" ditz-issue-directory))
                            (throw 'loop t))
-                          ((string= "/" default-directory)
+                          ((string= curdir "/")
                            (throw 'loop nil))
                           (t
-                           (cd ".."))))))
-           (setq issue-directory
-		 (concat default-directory ditz-issue-directory)))
+			   (setq curdir (directory-file-name
+					 (file-name-directory curdir))))))))
+           (setq issuedir (concat curdir "/" ditz-issue-directory)))
           (t
-           (setq issue-directory
+           (setq issuedir
                  (read-file-name "Issue dir: "
                                  (or ditz-last-visited-issue-directory
                                      default-directory)))))
 
-    ;; Restore default directory if needed.
-    (when current-directory
-      (setq default-directory current-directory))
-
-    (expand-file-name issue-directory)))
+    (expand-file-name issuedir)))
 
 (defun ditz-build-command (command arg)
   (let* ((issue-directory (ditz-issue-directory command))
