@@ -419,41 +419,61 @@
 
 ;; Hooks.
 (defvar ditz-mode-hook nil
-  "*Hooks for Ditz major mode")
+  "*Hooks for Ditz major mode.")
 
-;; Keymap.
+;; Keymaps.
 (defvar ditz-mode-map (make-keymap)
-  "*Keymap for Ditz major mode")
+  "*Keymap for Ditz major mode.")
+
+(defvar ditz-release-mode-map (make-keymap)
+  "*Keymap for Ditz release commands.")
+
+(defvar ditz-issue-mode-map (make-keymap)
+  "*Keymap for Ditz issue commands.")
+
+(defvar ditz-toggle-mode-map (make-keymap)
+  "*Keymap for Ditz toggle commands.")
+
+(defvar ditz-html-mode-map (make-keymap)
+  "*Keymap for Ditz HTML commands.")
 
 (define-key ditz-mode-map " " 'ditz-show)
 (define-key ditz-mode-map "l" 'ditz-shortlog)
 (define-key ditz-mode-map "L" 'ditz-log)
 (define-key ditz-mode-map "/" 'ditz-grep)
+(define-key ditz-mode-map "e" 'ditz-edit-project)
 
-(define-key ditz-mode-map "A" 'ditz-add)
-(define-key ditz-mode-map "c" 'ditz-comment)
-(define-key ditz-mode-map "<" 'ditz-start)
-(define-key ditz-mode-map ">" 'ditz-stop)
-(define-key ditz-mode-map "F" 'ditz-add-reference)
-(define-key ditz-mode-map "O" 'ditz-set-component)
-(define-key ditz-mode-map "E" 'ditz-edit)
-(define-key ditz-mode-map "C" 'ditz-close)
-(define-key ditz-mode-map "D" 'ditz-drop)
+(define-key ditz-mode-map "i" ditz-issue-mode-map)
 
-(define-key ditz-mode-map "r" 'ditz-add-release)
-(define-key ditz-mode-map "a" 'ditz-assign)
-(define-key ditz-mode-map "u" 'ditz-unassign)
-(define-key ditz-mode-map "R" 'ditz-release)
-(define-key ditz-mode-map "S" 'ditz-status)
-(define-key ditz-mode-map "G" 'ditz-changelog)
-(define-key ditz-mode-map "$" 'ditz-archive)
-(define-key ditz-mode-map "P" 'ditz-edit-project)
+(define-key ditz-issue-mode-map "n" 'ditz-add)
+(define-key ditz-issue-mode-map "c" 'ditz-comment)
+(define-key ditz-issue-mode-map "<" 'ditz-start)
+(define-key ditz-issue-mode-map ">" 'ditz-stop)
+(define-key ditz-issue-mode-map "a" 'ditz-assign)
+(define-key ditz-issue-mode-map "u" 'ditz-unassign)
+(define-key ditz-issue-mode-map "r" 'ditz-add-reference)
+(define-key ditz-issue-mode-map "o" 'ditz-set-component)
+(define-key ditz-issue-mode-map "e" 'ditz-edit)
+(define-key ditz-issue-mode-map "C" 'ditz-close)
+(define-key ditz-issue-mode-map "D" 'ditz-drop)
 
-(define-key ditz-mode-map "," 'ditz-toggle-status)
-(define-key ditz-mode-map "." 'ditz-toggle-release)
+(define-key ditz-mode-map "r" ditz-release-mode-map)
 
-(define-key ditz-mode-map "H" 'ditz-html)
-(define-key ditz-mode-map "B" 'ditz-html-browse)
+(define-key ditz-release-mode-map "n" 'ditz-add-release)
+(define-key ditz-release-mode-map "r" 'ditz-release)
+(define-key ditz-release-mode-map "s" 'ditz-status)
+(define-key ditz-release-mode-map "l" 'ditz-changelog)
+(define-key ditz-release-mode-map "a" 'ditz-archive)
+
+(define-key ditz-mode-map "t" ditz-toggle-mode-map)
+
+(define-key ditz-toggle-mode-map "s" 'ditz-toggle-status)
+(define-key ditz-toggle-mode-map "r" 'ditz-toggle-release)
+
+(define-key ditz-mode-map "h" ditz-html-mode-map)
+
+(define-key ditz-html-mode-map "h" 'ditz-html)
+(define-key ditz-html-mode-map "b" 'ditz-html-browse)
 
 (define-key ditz-mode-map "g" 'ditz-reload)
 (define-key ditz-mode-map "q" 'ditz-quit)
@@ -462,7 +482,7 @@
 (define-key ditz-mode-map "n" 'ditz-next-line)
 (define-key ditz-mode-map "p" 'ditz-previous-line)
 
-(define-key ditz-mode-map "h" 'describe-mode)
+(define-key ditz-mode-map "?" 'describe-mode)
 
 ;; Easymenu.
 (easy-menu-define ditz-mode-menu ditz-mode-map "Ditz mode menu"
@@ -471,25 +491,25 @@
    ["Show short log"                    ditz-shortlog t]
    ["Show detailed log"                 ditz-log t]
    ["Show issues matching regexp"       ditz-grep t]
+   ["Edit project file"                 ditz-edit-project t]
    "---"
-   ["Add new issue"                     ditz-add t]
+   ["New issue"                         ditz-add t]
    ["Comment on issue"                  ditz-comment t]
    ["Start working on issue"            ditz-start t]
    ["Stop working on issue"             ditz-stop t]
    ["Set an issue's component"          ditz-set-component t]
    ["Add an issue reference"            ditz-add-reference t]
+   ["Assign issue to release"           ditz-assign t]
+   ["Unassign issue"                    ditz-unassign t]
    ["Edit issue"                        ditz-edit t]
    ["Close issue"                       ditz-close t]
    ["Drop issue"                        ditz-drop t]
    "---"
-   ["Add new release"                   ditz-add-release t]
-   ["Assign issue to release"           ditz-assign t]
-   ["Unassign issue"                    ditz-unassign t]
+   ["New release"                       ditz-add-release t]
    ["Release version"                   ditz-release t]
    ["Show release status"               ditz-status t]
    ["Show release changelog"            ditz-changelog t]
    ["Archive a release"                 ditz-archive t]
-   ["Edit project file"                 ditz-edit-project t]
    "---"
    ["Show/hide by issue status"         ditz-toggle-status t]
    ["Show/hide by release"              ditz-toggle-release t]
