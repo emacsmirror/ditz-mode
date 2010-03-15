@@ -381,31 +381,41 @@
   (concat (ditz-issue-directory) "/issue-" id ".yaml"))
 
 (defun ditz-issue-directory ()
+  "Return pathname of Ditz issue directory."
+
   (let* ((configfile (ditz-find-config))
 	 (parentdir (file-name-directory configfile))
 	 (buf (get-buffer-create "*ditz-config*"))
 	 (issuedir nil)
 	 (issuedirname nil))
 
+    ;; Get issue directory name from config file.
     (with-current-buffer buf
       (insert-file-contents-literally configfile nil nil nil t)
       (goto-char (point-min))
       (if (search-forward "issue_dir: ")
 	  (setq issuedirname (buffer-substring (point) (line-end-position)))
-	(error "Can't find issue_dir setting in %s" configfile)))
+	(error "Can't find 'issue_dir' setting in %s" configfile)))
 
+    ;; Try looking in current directory for it.
     (setq issuedir (concat default-directory "/" issuedirname))
-    (unless (file-exists-p issuedir)
-      (setq issuedir (concat parentdir "/" issuedir)))
 
+    ;; If not there, try same directory as config file.
     (unless (file-exists-p issuedir)
-      (error "Can't find issue directory '%s'" issuedirname))
+      (setq issuedir (concat parentdir "/" issuedirname)))
+
+    ;; If still not there, give up.
+    (unless (file-exists-p issuedir)
+      (error "Can't find Ditz issue directory '%s'" issuedirname))
 
     (expand-file-name issuedir)))
 
 (defun ditz-find-config ()
+  "Find Ditz config file in current or parent directories."
+
   (let ((curdir (expand-file-name (file-name-directory default-directory)))
 	(configfile nil))
+
     (while (not configfile)
       (setq path (concat curdir "/" ditz-config-filename))
       (cond ((file-exists-p path)
