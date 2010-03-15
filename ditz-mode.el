@@ -36,22 +36,10 @@
   :type 'string
   :group 'ditz)
 
-(defcustom ditz-issue-directory "bugs"
-  "Default directory name in which issues are stored.
-
-You must set it some value according with your environment when
-you use automatic finding described below."
-  :type 'string
-  :group 'ditz)
-
-(defcustom ditz-find-issue-directory-automatically-flag t
-  "If non-nil, issue directory will be found automatically in
-directories from the current one toward the root. Otherwise, you
-must set it from minibuffer."
-  :type 'boolean
-  :group 'ditz)
-
 ;; Constants.
+(defconst ditz-config-filename ".ditz-config"
+  "File name of the Ditz config file.")
+
 (defconst ditz-issue-id-regex "\\([a-z]+-[0-9]+\\)"
   "Regex for issue id.")
 
@@ -89,11 +77,6 @@ must set it from minibuffer."
   "Release specified by ditz-todo.")
 
 ;; Commands.
-(defun ditz-init ()
-  "Initialize ditz issues."
-  (interactive)
-  (ditz-call-process "init" nil "pop" t))
-
 (defun ditz-html ()
   "Generate HTML files of issues."
   (interactive)
@@ -385,7 +368,11 @@ must set it from minibuffer."
       (ditz-mode)
       (goto-char (point-min)))))
 
-(defvar ditz-last-visited-issue-directory nil)
+(defun ditz-build-command (command arg)
+  (let* ((issue-directory (ditz-issue-directory))
+	 (quoted-directory (concat "\"" issue-directory "\"")))
+    (mapconcat 'identity
+               (list ditz-program "-i" quoted-directory command arg) " ")))
 
 (defun ditz-project-file ()
   (concat (ditz-issue-directory) "/project.yaml"))
@@ -393,39 +380,43 @@ must set it from minibuffer."
 (defun ditz-issue-file (id)
   (concat (ditz-issue-directory) "/issue-" id ".yaml"))
 
-(defun ditz-issue-directory (&optional command)
-  (let ((curdir (expand-file-name (file-name-directory default-directory)))
-	(issuedir nil))
+(defun ditz-issue-directory ()
+  (let* ((configfile (ditz-find-config))
+	 (parentdir (file-name-directory configfile))
+	 (buf (get-buffer-create "*ditz-config*"))
+	 (issuedir nil)
+	 (issuedirname nil))
 
-    (cond ((eq major-mode 'ditz-mode)
-           (setq issuedir ditz-last-visited-issue-directory))
-          ((and (not (string= command "init"))
-                ditz-find-issue-directory-automatically-flag
-                (catch 'loop
-                  (while t
-                    (cond ((file-exists-p
-			    (concat curdir "/" ditz-issue-directory))
-                           (throw 'loop t))
-                          ((string= curdir "/")
-                           (throw 'loop nil))
-                          (t
-			   (setq curdir (directory-file-name
-					 (file-name-directory curdir))))))))
-           (setq issuedir (concat curdir "/" ditz-issue-directory)))
-          (t
-           (setq issuedir
-                 (read-file-name "Issue dir: "
-                                 (or ditz-last-visited-issue-directory
-                                     default-directory)))))
+    (with-current-buffer buf
+      (insert-file-contents-literally configfile t nil nil t)
+      (goto-char (point-min))
+      (if (search-forward "issue_dir: ")
+	  (setq issuedirname (buffer-substring (point) (line-end-position)))
+	(error "Can't find issue_dir setting in %s" configfile)))
+
+    (setq issuedir (concat default-directory "/" issuedirname))
+    (unless (file-exists-p issuedir)
+      (setq issuedir (concat parentdir "/" issuedir)))
+
+    (unless (file-exists-p issuedir)
+      (error "Can't find issue directory '%s'" issuedirname))
 
     (expand-file-name issuedir)))
 
-(defun ditz-build-command (command arg)
-  (let* ((issue-directory (ditz-issue-directory command))
-	 (quoted-directory (concat "\"" issue-directory "\"")))
-    (setq ditz-last-visited-issue-directory issue-directory)
-    (mapconcat 'identity
-               (list ditz-program "-i" quoted-directory command arg) " ")))
+(defun ditz-find-config ()
+  (let ((curdir (expand-file-name (file-name-directory default-directory)))
+	(configfile nil))
+    (while (not configfile)
+      (setq path (concat curdir "/" ditz-config-filename))
+	(cond ((file-exists-p path)
+	       (setq configfile path))
+	      ((string= curdir "/")
+	       (error "Can't find %s; have you run 'ditz init'?"
+		      ditz-config-filename))
+	      (t
+	       (setq curdir (directory-file-name
+			     (file-name-directory curdir))))))
+    configfile))
 
 ;; Hooks.
 (defvar ditz-mode-hook nil
