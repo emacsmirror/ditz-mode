@@ -408,14 +408,13 @@
 	(configfile nil))
     (while (not configfile)
       (setq path (concat curdir "/" ditz-config-filename))
-	(cond ((file-exists-p path)
-	       (setq configfile path))
-	      ((string= curdir "/")
-	       (error "Can't find %s; have you run 'ditz init'?"
-		      ditz-config-filename))
-	      (t
-	       (setq curdir (directory-file-name
-			     (file-name-directory curdir))))))
+      (cond ((file-exists-p path)
+	     (setq configfile path))
+	    ((string= curdir "/")
+	     (error "Can't find %s; have you run 'ditz init'?"
+		    ditz-config-filename))
+	    (t
+	     (setq curdir (directory-file-name (file-name-directory curdir))))))
     configfile))
 
 ;; Hooks.
