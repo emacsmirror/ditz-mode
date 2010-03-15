@@ -388,7 +388,7 @@
 	 (issuedirname nil))
 
     (with-current-buffer buf
-      (insert-file-contents-literally configfile t nil nil t)
+      (insert-file-contents-literally configfile nil nil nil t)
       (goto-char (point-min))
       (if (search-forward "issue_dir: ")
 	  (setq issuedirname (buffer-substring (point) (line-end-position)))
