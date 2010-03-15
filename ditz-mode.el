@@ -321,17 +321,22 @@
 	  (replace-buffer-in-windows))))))
 
 (defun ditz-call-process (command &optional arg popup-flag interactive)
-  "Invoke a ditz command."
+  "Invoke a Ditz command."
 
-  (let* ((cmd (ditz-build-command command arg))
+  (let* ((issuedir (ditz-issue-directory))
+	 (quoteddir (concat "\"" issuedir "\""))
+	 (cmd (mapconcat 'identity
+			 (list ditz-program "-i" quoteddir command arg) " "))
 	 (bufname (concat "*ditz-" command "*"))
 	 (buffer (get-buffer-create bufname))
          (proc (get-buffer-process buffer)))
 
+    ;; If not interactive, make sure we get a new buffer.
     (unless interactive
       (kill-buffer buffer)
       (setq buffer (get-buffer-create bufname)))
 
+    ;; If interactive and already running, ask for confirmation.
     (if (and interactive proc (eq (process-status proc) 'run))
         (when (y-or-n-p (format "A %s process is running; kill it?"
                                 (process-name proc)))
@@ -339,17 +344,21 @@
           (sit-for 1)
           (delete-process proc)))
 
+    ;; Initialize command buffer.
     (with-current-buffer buffer
+      (setq default-directory (file-name-directory issuedir))
       (setq buffer-read-only nil)
       (erase-buffer)
       (buffer-disable-undo (current-buffer)))
 
+    ;; Start the Ditz process.
     (if interactive
 	(make-comint-in-buffer "ditz-call-process"
 			       buffer shell-file-name nil
 			       shell-command-switch cmd)
       (call-process-shell-command cmd nil buffer))
 
+    ;; Display results.
     (cond ((string= popup-flag "switch")
 	   (switch-to-buffer buffer))
           ((string= popup-flag "pop")
@@ -364,15 +373,11 @@
           (t
            (set-buffer buffer)))
 
+
+    ;; Go to Ditz mode if required.
     (when (and (not interactive) (eq buffer (current-buffer)))
       (ditz-mode)
       (goto-char (point-min)))))
-
-(defun ditz-build-command (command arg)
-  (let* ((issue-directory (ditz-issue-directory))
-	 (quoted-directory (concat "\"" issue-directory "\"")))
-    (mapconcat 'identity
-               (list ditz-program "-i" quoted-directory command arg) " ")))
 
 (defun ditz-project-file ()
   (concat (ditz-issue-directory) "/project.yaml"))
@@ -381,7 +386,7 @@
   (concat (ditz-issue-directory) "/issue-" id ".yaml"))
 
 (defun ditz-issue-directory ()
-  "Return pathname of Ditz issue directory."
+  "Return pathname of the Ditz issue directory."
 
   (let* ((configfile (ditz-find-config))
 	 (parentdir (file-name-directory configfile))
