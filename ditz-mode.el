@@ -1,4 +1,4 @@
-;;; ditz.el --- Emacs interface to Ditz issue tracking system 
+;;; ditz-mode.el --- Emacs interface to Ditz issue tracking system 
 
 ;; Copyright (C) 2008-2010 Kentaro Kuribayashi, Glenn Hutchings
 
@@ -22,18 +22,6 @@
 
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-;;; Origin:
-
-;; This is a much-enhanced version of the original ditz mode, written by
-;; Kentaro Kuribayashi <kentarok@gmail.com>, which can be found at:
-;;
-;;     http://github.com/kentaro/emacs-ditz/tree/master
-;;
-;; and modified under the conditions of the GPLv3.  This version is hosted
-;; at Bitbucket:
-;;
-;;     http://bitbucket.org/zondo/ditz-mode
 
 ;;; Commentary:
 
@@ -701,5 +689,5 @@ Calling this function invokes the function(s) listed in
   ;; Run startup hooks.
   (run-hooks 'ditz-mode-hook))
 
-(provide 'ditz)
-;;; ditz.el ends here
+(provide 'ditz-mode)
+;;; ditz-mode.el ends here
