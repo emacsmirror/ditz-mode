@@ -1,0 +1,17 @@
+=========================
+ Ditz mode for GNU Emacs
+=========================
+
+This is a much-enhanced version of the original Ditz mode, written by
+Kentaro Kuribayashi <kentarok@gmail.com>, which can be found at:
+
+    http://github.com/kentaro/emacs-ditz/tree/master
+
+and modified under the conditions of the GPLv3.  This version is hosted
+at Bitbucket:
+
+    http://bitbucket.org/zondo/ditz-mode
+
+.. Local Variables:
+.. mode: rst
+.. End:
