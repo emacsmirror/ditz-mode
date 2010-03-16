@@ -2,10 +2,13 @@
 
 ;; Copyright (C) 2008-2010 Kentaro Kuribayashi, Glenn Hutchings
 
-;; Authors:    Kentaro Kuribayashi, Glenn Hutchings
-;; Maintainer: zondo42@googlemail.com
-;; Keywords:   ditz
-;; Version:    0.1
+;; Author: Kentaro Kuribayashi <kentarok@gmail.com>
+;;	Glenn Hutchings <zondo42@googlemail.com>
+;; Maintainer: Glenn Hutchings <zondo42@googlemail.com>
+;; Keywords: tools
+;; Version: 0.1
+
+;; This file is not a part of GNU Emacs.
 
 ;; This program is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by the
@@ -20,15 +23,17 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; Origin:
+
 ;; This is a much-enhanced version of the original ditz mode, written by
 ;; Kentaro Kuribayashi <kentarok@gmail.com>, which can be found at:
 ;;
-;;   http://github.com/kentaro/emacs-ditz/tree/master
+;;     http://github.com/kentaro/emacs-ditz/tree/master
 ;;
 ;; and modified under the conditions of the GPLv3.  This version is hosted
 ;; at Bitbucket:
 ;;
-;;   http://bitbucket.org/zondo/ditz-mode
+;;     http://bitbucket.org/zondo/ditz-mode
 
 ;;; Commentary:
 
@@ -41,10 +46,7 @@
 ;;     (require 'ditz)
 ;;     (define-key global-map "\C-c\C-d" 'ditz-todo)
 ;;
-;; Ditz mode operates on directories that have already been Ditz-enabled:
-;; i.e., 'ditz init' has already been run from the command line.  After
-;; that, you can invoke 'ditz-todo' and get a list of issues in a Ditz
-;; buffer.
+;; See the documentation for `ditz-mode' for more info.
 
 ;;; Code:
 
@@ -326,15 +328,13 @@
 
 (defun ditz-toggle-message ()
   "Give message based on current display settings."
-  (message
-   (mapconcat 'identity
-	      (list "Showing"
-		    (if (string= ditz-todo-flags "")
-			"unresolved" "all")
-		    "issues"
-		    (if (string= ditz-todo-release "")
-			"" (format "assigned to release %s" ditz-todo-release)))
-	      " ")))
+  (message 
+   (concat "Showing "
+	   (if (string= ditz-todo-flags "")
+	       "unresolved" "all")
+	   " issues "
+	   (if (string= ditz-todo-release "")
+	       "" (format "assigned to release %s" ditz-todo-release)))))
 
 (defun ditz-extract-issue (&optional noerror)
   (let ((issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1)))
@@ -425,7 +425,12 @@
   (concat (ditz-issue-directory) "/issue-" id ".yaml"))
 
 (defun ditz-issue-directory ()
-  "Return pathname of the Ditz issue directory."
+  "Return pathname of the Ditz issue directory.
+
+The issue directory is found by searching upward from the current
+directory for a .ditz-config file containing the issue_dir
+setting.  Then the issue directory is located either in the
+current directory or the one with the .ditz-config file in it."
 
   (let* ((configfile (ditz-find-config))
 	 (parentdir (file-name-directory configfile))
@@ -479,29 +484,28 @@
   "*Hooks for Ditz major mode.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Keymaps.
+;; Commands.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Main commands.
 (defvar ditz-mode-map (make-keymap)
   "*Keymap for Ditz major mode.")
-
-(defvar ditz-release-mode-map (make-keymap)
-  "*Keymap for Ditz release commands.")
-
-(defvar ditz-issue-mode-map (make-keymap)
-  "*Keymap for Ditz issue commands.")
-
-(defvar ditz-toggle-mode-map (make-keymap)
-  "*Keymap for Ditz toggle commands.")
-
-(defvar ditz-html-mode-map (make-keymap)
-  "*Keymap for Ditz HTML commands.")
 
 (define-key ditz-mode-map " " 'ditz-show)
 (define-key ditz-mode-map "l" 'ditz-shortlog)
 (define-key ditz-mode-map "L" 'ditz-log)
 (define-key ditz-mode-map "/" 'ditz-grep)
 (define-key ditz-mode-map "e" 'ditz-edit-project)
+(define-key ditz-mode-map "g" 'ditz-reload)
+(define-key ditz-mode-map "q" 'ditz-quit)
+(define-key ditz-mode-map "Q" 'ditz-quit-all)
+(define-key ditz-mode-map "n" 'ditz-next-line)
+(define-key ditz-mode-map "p" 'ditz-previous-line)
+(define-key ditz-mode-map "?" 'describe-mode)
+
+;; Issue commands.
+(defvar ditz-issue-mode-map (make-keymap)
+  "*Keymap for Ditz issue commands.")
 
 (define-key ditz-mode-map "i" ditz-issue-mode-map)
 
@@ -517,6 +521,10 @@
 (define-key ditz-issue-mode-map "C" 'ditz-close)
 (define-key ditz-issue-mode-map "D" 'ditz-drop)
 
+;; Release commands.
+(defvar ditz-release-mode-map (make-keymap)
+  "*Keymap for Ditz release commands.")
+
 (define-key ditz-mode-map "r" ditz-release-mode-map)
 
 (define-key ditz-release-mode-map "n" 'ditz-add-release)
@@ -525,24 +533,23 @@
 (define-key ditz-release-mode-map "l" 'ditz-changelog)
 (define-key ditz-release-mode-map "a" 'ditz-archive)
 
+;; Toggle commands.
+(defvar ditz-toggle-mode-map (make-keymap)
+  "*Keymap for Ditz toggle commands.")
+
 (define-key ditz-mode-map "t" ditz-toggle-mode-map)
 
 (define-key ditz-toggle-mode-map "s" 'ditz-toggle-status)
 (define-key ditz-toggle-mode-map "r" 'ditz-toggle-release)
 
+;; HTML commands.
+(defvar ditz-html-mode-map (make-keymap)
+  "*Keymap for Ditz HTML commands.")
+
 (define-key ditz-mode-map "h" ditz-html-mode-map)
 
 (define-key ditz-html-mode-map "h" 'ditz-html)
 (define-key ditz-html-mode-map "b" 'ditz-html-browse)
-
-(define-key ditz-mode-map "g" 'ditz-reload)
-(define-key ditz-mode-map "q" 'ditz-quit)
-(define-key ditz-mode-map "Q" 'ditz-quit-all)
-
-(define-key ditz-mode-map "n" 'ditz-next-line)
-(define-key ditz-mode-map "p" 'ditz-previous-line)
-
-(define-key ditz-mode-map "?" 'describe-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Easymenu.
@@ -569,7 +576,7 @@
    ["Drop issue"                        ditz-drop t]
    "---"
    ["New release"                       ditz-add-release t]
-   ["Release version"                   ditz-release t]
+   ["Release a release"                 ditz-release t]
    ["Show release status"               ditz-status t]
    ["Show release changelog"            ditz-changelog t]
    ["Archive a release"                 ditz-archive t]
@@ -659,10 +666,19 @@
 (define-derived-mode ditz-mode fundamental-mode "Ditz"
   "Major mode for the Ditz distributed issue tracker.
 
-\\{ditz-mode-map}
+Ditz mode operates on directories that have already been
+Ditz-enabled: i.e., 'ditz init' has already been run from the
+command line.  After that, you can invoke 'ditz-todo' and get a
+list of issues in a Ditz buffer.
 
-Calling this function invokes the function(s) listed in `ditz-mode-hook'
-before doing anything else."
+See `ditz-issue-directory' for details on how the Ditz issue
+directory is located.
+
+Calling this function invokes the function(s) listed in
+`ditz-mode-hook' before doing anything else.
+
+\\{ditz-mode-map}
+"
   :group 'ditz
 
   (interactive)
