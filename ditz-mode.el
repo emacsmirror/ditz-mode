@@ -132,12 +132,12 @@
 (defun ditz-show ()
   "Show issue details."
   (interactive)
-  (ditz-call-process "show" (ditz-extract-issue) "switch"))
+  (ditz-call-process "show" (ditz-current-issue) "switch"))
 
 (defun ditz-show-other-window ()
   "Show issue details in another window."
   (interactive)
-  (let ((issue-id (ditz-extract-issue t)))
+  (let ((issue-id (ditz-current-issue t)))
     (when issue-id
       (ditz-call-process "show" issue-id "display-other"))))
 
@@ -149,22 +149,22 @@
 (defun ditz-assign ()
   "Assign issue to a release."
   (interactive)
-  (ditz-call-process "assign" (ditz-extract-issue) "switch" t))
+  (ditz-call-process "assign" (ditz-current-issue) "switch" t))
 
 (defun ditz-unassign ()
   "Unassign an issue."
   (interactive)
-  (ditz-call-process "unassign" (ditz-extract-issue) "switch" t))
+  (ditz-call-process "unassign" (ditz-current-issue) "switch" t))
 
 (defun ditz-comment ()
   "Comment on an issue."
   (interactive)
-  (ditz-call-process "comment" (ditz-extract-issue) "pop" t))
+  (ditz-call-process "comment" (ditz-current-issue) "pop" t))
 
 (defun ditz-edit ()
   "Edit issue details."
   (interactive)
-  (let ((issue-id (ditz-extract-issue))
+  (let ((issue-id (ditz-current-issue))
 	(issue-dir (ditz-issue-directory)))
     (ditz-call-process "show" issue-id)
     (goto-char (point-min))
@@ -182,40 +182,39 @@
 (defun ditz-close ()
   "Close an issue."
   (interactive)
-  (ditz-call-process "close" (ditz-extract-issue) "switch" t))
+  (ditz-call-process "close" (ditz-current-issue) "switch" t))
 
 (defun ditz-drop ()
   "Drop an issue."
   (interactive)
-  (let ((issue-id (ditz-extract-issue)))
+  (let ((issue-id (ditz-current-issue)))
     (when (yes-or-no-p (concat "Drop " issue-id " "))
       (ditz-call-process "drop" issue-id "switch"))))
 
 (defun ditz-start ()
   "Start work on an issue."
   (interactive)
-  (ditz-call-process "start" (ditz-extract-issue) "switch" t))
+  (ditz-call-process "start" (ditz-current-issue) "switch" t))
 
 (defun ditz-stop ()
   "Stop work on an issue."
   (interactive)
-  (ditz-call-process "stop" (ditz-extract-issue) "switch" t))
+  (ditz-call-process "stop" (ditz-current-issue) "switch" t))
 
 (defun ditz-set-component ()
   "Set an issue's component."
   (interactive)
-  (ditz-call-process "set-component" (ditz-extract-issue) "switch" t))
+  (ditz-call-process "set-component" (ditz-current-issue) "switch" t))
 
 (defun ditz-add-reference ()
   "Add an issue reference."
   (interactive)
-  (ditz-call-process "add-reference" (ditz-extract-issue) "switch" t))
+  (ditz-call-process "add-reference" (ditz-current-issue) "switch" t))
 
 (defun ditz-release ()
   "Mark release as released."
   (interactive)
-  (let ((release-name (ditz-extract-release)))
-    (ditz-call-process "release" release-name "switch" t)))
+  (ditz-call-process "release" (ditz-current-release) "switch" t))
 
 (defun ditz-toggle-status ()
   "Show/hide by issue status."
@@ -230,22 +229,24 @@
   "Show/hide by release."
   (interactive)
   (if (string= ditz-todo-release "")
-      (setq ditz-todo-release (ditz-extract-release))
+      (setq ditz-todo-release (ditz-current-release))
     (setq ditz-todo-release ""))
   (ditz-toggle-message)
   (ditz-reload))
 
-(defun ditz-next-line ()
+(defun ditz-next-issue ()
   "Go to the next line, showing the issue in another window."
   (interactive)
-  (next-line)
-  (ditz-show-other-window))
+  (forward-button 1 t)
+  (if (string= (buffer-name) "*ditz-todo*")
+      (ditz-show-other-window)))
 
-(defun ditz-previous-line ()
+(defun ditz-previous-issue ()
   "Go to the previous line, showing the issue in another window."
   (interactive)
-  (previous-line)
-  (ditz-show-other-window))
+  (backward-button 1 t)
+  (if (string= (buffer-name) "*ditz-todo*")
+      (ditz-show-other-window)))
 
 (defun ditz-html-generate ()
   "Generate HTML files of issues, returning the created HTML file."
@@ -264,7 +265,7 @@
 (defun ditz-archive ()
   "Archive a release."
   (interactive)
-  (let ((release-name (ditz-extract-release)))
+  (let ((release-name (ditz-current-release)))
     (when (yes-or-no-p (concat "Archive release " release-name "? "))
       (ditz-call-process "archive" release-name "display")
       (ditz-reload))))
@@ -272,8 +273,7 @@
 (defun ditz-changelog ()
   "Show change log for a release."
   (interactive)
-  (let ((release-name (ditz-extract-release)))
-    (ditz-call-process "changelog" release-name "display")))
+  (ditz-call-process "changelog" (ditz-current-release) "display"))
 
 (defun ditz-reload ()
   "Reload the current Ditz buffer."
@@ -284,7 +284,7 @@
         ((string= (buffer-name) "*ditz-status*")
          (ditz-call-process "status" nil "switch"))
         ((string= (buffer-name) "*ditz-show*")
-         (ditz-call-process "show" (ditz-extract-issue) "switch"))
+         (ditz-call-process "show" (ditz-current-issue) "switch"))
         ((string= (buffer-name) "*ditz-shortlog*")
 	 (ditz-call-process "shortlog" nil "switch"))
         ((string= (buffer-name) "*ditz-log*")
@@ -308,6 +308,29 @@
 
 ;;;; Internal functions.
 
+(defun ditz-current-issue (&optional noerror)
+  "Return issue ID at the current/next issue button."
+  (let ((button (next-button (point) t)))
+    (cond (button
+	   (button-label button))
+	  (noerror
+	   nil)
+	  (t
+	   (error "No current issue")))))
+
+(defun ditz-current-release (&optional noerror)
+  "Return the release ID on the current line."
+  (save-excursion
+    (let* ((beg (progn (beginning-of-line) (point)))
+	   (end (progn (end-of-line) (point)))
+	   (line (buffer-substring-no-properties beg end))
+	   (release (when (string-match ditz-release-name-regex line)
+		      (match-string 1 line))))
+      (cond ((or release noerror)
+	     release)
+	    (t
+	     (error "No release on this line"))))))
+
 (defun ditz-todo-args ()
   "Return current ditz todo arguments."
   (format "%s %s" ditz-todo-flags ditz-todo-release))
@@ -321,32 +344,6 @@
 	   " issues "
 	   (if (string= ditz-todo-release "")
 	       "" (format "assigned to release %s" ditz-todo-release)))))
-
-(defun ditz-extract-issue (&optional noerror)
-  "Extract an issue ID from the current line."
-  (let ((issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1)))
-    (unless (or issue-id noerror)
-      (error "No issue on this line"))
-    issue-id))
-
-(defun ditz-extract-release (&optional noerror)
-  "Extract a release ID from the current line."
-  (let ((release (ditz-extract-thing-at-point ditz-release-name-regex 1)))
-    (unless (or release noerror)
-      (error "No release on this line"))
-    release))
-
-(defun ditz-extract-thing-at-point (regex n)
-  "Extract REGEX at the current point."
-  (save-excursion
-    (let ((line (buffer-substring-no-properties (progn
-						  (beginning-of-line)
-						  (point))
-						(progn
-						  (end-of-line)
-						  (point)))))
-      (when (string-match regex line)
-        (match-string n line)))))
 
 (defun ditz-call-process (command &optional arg popup-flag interactive)
   "Invoke a Ditz command."
@@ -467,6 +464,10 @@ current directory or the one with the .ditz-config file in it."
 	     (setq curdir (directory-file-name (file-name-directory curdir))))))
     configfile))
 
+(defun ditz-button-press (button)
+  "Press button BUTTON to show an issue."
+  (ditz-call-process "show" (button-label button) "switch"))
+
 ;;;; Hooks.
 
 (defvar ditz-mode-hook nil
@@ -482,11 +483,14 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-mode-map "l" 'ditz-shortlog)
 (define-key ditz-mode-map "L" 'ditz-log)
 (define-key ditz-mode-map "/" 'ditz-grep)
-(define-key ditz-mode-map "n" 'ditz-next-line)
-(define-key ditz-mode-map "p" 'ditz-previous-line)
+
+(define-key ditz-mode-map "n" 'ditz-next-issue)
+(define-key ditz-mode-map "p" 'ditz-previous-issue)
+
 (define-key ditz-mode-map "g" 'ditz-reload)
 (define-key ditz-mode-map "q" 'ditz-quit)
 (define-key ditz-mode-map "Q" 'ditz-quit-all)
+
 (define-key ditz-mode-map "?" 'describe-mode)
 
 ;; Issue commands.
@@ -545,8 +549,8 @@ current directory or the one with the .ditz-config file in it."
    ("Display"
     ["Current issue"                    ditz-show t]
     "---"
-    ["Next issue"                       ditz-next-line t]
-    ["Previous issue"                   ditz-previous-line t]
+    ["Next issue"                       ditz-next-issue t]
+    ["Previous issue"                   ditz-previous-issue t]
     "---"
     ["Short log"                        ditz-shortlog t]
     ["Detailed log"                     ditz-log t]
@@ -595,14 +599,6 @@ current directory or the one with the .ditz-config file in it."
 
 ;;;; Faces.
 
-(defface ditz-issue-id-face
-  '((((class color) (background light))
-     (:foreground "blue" :weight bold))
-    (((class color) (background dark))
-     (:foreground "blue" :weight bold)))
-  "Face definition for issue id."
-  :group 'ditz)
-
 (defface ditz-issue-attr-face
   '((((class color) (background light))
      (:foreground "steel blue" :weight bold))
@@ -643,7 +639,6 @@ current directory or the one with the .ditz-config file in it."
   "Face definition for bug indicators."
   :group 'ditz)
 
-(defconst ditz-issue-id-face 'ditz-issue-id-face)
 (defconst ditz-issue-attr-face 'ditz-issue-attr-face)
 (defconst ditz-release-name-face 'ditz-release-name-face)
 (defconst ditz-comment-face 'ditz-comment-face)
@@ -654,7 +649,6 @@ current directory or the one with the .ditz-config file in it."
   `((,ditz-issue-attr-regex (1 ditz-issue-attr-face t))
     (,ditz-log-attr-regex (1 ditz-issue-attr-face t))
     (,ditz-comment-regex (1 ditz-comment-face t))
-    (,ditz-issue-id-regex (1 ditz-issue-id-face t))
     (,ditz-release-name-regex (1 ditz-release-name-face t))
     (,ditz-feature-regex (1 ditz-feature-face t))
     (,ditz-bug-regex (1 ditz-bug-face t))))
@@ -695,6 +689,14 @@ Calling this function invokes the function(s) listed in
 
   ;; Activate keymap.
   (use-local-map ditz-mode-map)
+
+  ;; Create buttons for issues.
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward ditz-issue-id-regex nil t)
+      (make-button (match-beginning 0) (match-end 0)
+		   'action 'ditz-button-press
+		   'help-echo "mouse-2, RET: show this issue")))
 
   ;; Run startup hooks.
   (run-hooks 'ditz-mode-hook))

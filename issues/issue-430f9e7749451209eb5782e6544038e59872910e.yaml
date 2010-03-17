@@ -5,8 +5,8 @@ type: :feature
 component: ditz-mode
 release: "0.1"
 reporter: Glenn Hutchings <zondo42@googlemail.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2010-03-17 10:17:01.365815 Z
 references: []
 
@@ -15,4 +15,8 @@ log_events:
 - - 2010-03-17 10:17:02.469557 Z
   - Glenn Hutchings <zondo42@googlemail.com>
   - created
+  - ""
+- - 2010-03-17 14:10:00.151200 Z
+  - Glenn Hutchings <zondo42@googlemail.com>
+  - closed with disposition fixed
   - ""
