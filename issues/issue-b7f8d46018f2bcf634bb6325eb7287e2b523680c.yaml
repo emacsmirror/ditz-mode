@@ -6,10 +6,10 @@ desc: |-
   to be able to see them somehow.
 type: :task
 component: ditz-mode
-release: 
+release: "0.1"
 reporter: Glenn Hutchings <zondo42@googlemail.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2010-03-17 11:17:43.043984 Z
 references: []
 
@@ -18,4 +18,12 @@ log_events:
 - - 2010-03-17 11:17:43.843801 Z
   - Glenn Hutchings <zondo42@googlemail.com>
   - created
+  - ""
+- - 2010-03-17 16:40:47.674053 Z
+  - Glenn Hutchings <zondo42@googlemail.com>
+  - assigned to release 0.1 from unassigned
+  - ""
+- - 2010-03-17 16:40:58.186195 Z
+  - Glenn Hutchings <zondo42@googlemail.com>
+  - closed with disposition fixed
   - ""
