@@ -2,15 +2,62 @@
  Ditz mode for GNU Emacs
 =========================
 
-This is a much-enhanced version of the original Ditz mode, written by
-Kentaro Kuribayashi <kentarok@gmail.com>, which can be found at:
+About Ditz and Ditz mode
+========================
 
-    http://github.com/kentaro/emacs-ditz/tree/master
+Ditz_ is a distributed issue tracking system, written in Ruby by William
+Morgan, and designed for use with distributed version control systems such
+as Mercurial_.  Ditz mode is an editing mode for GNU Emacs_, allowing Ditz
+commands to be run directly inside an Emacs buffer.  You can find the
+latest version of Ditz mode at Bitbucket_.
 
-and modified under the conditions of the GPLv3.  This version is hosted
-at Bitbucket:
+Ditz mode is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option)
+any later version.  See the file ``COPYING`` for details.
 
-    http://bitbucket.org/zondo/ditz-mode
+Setting things up
+=================
+
+Put ``ditz-mode.el`` in your lisp load path and something like the
+following in your ``.emacs`` file::
+
+    (require 'ditz-mode)
+    (define-key global-map "\C-c\C-d" 'ditz-todo)
+
+Using Ditz mode
+===============
+
+WRITE ME.
+
+Other contributed stuff
+=======================
+
+The ``contrib`` directory contains other Ditz-related files you may be
+interested in:
+
+``ditz-tag.patch``
+    A patch for Ditz which adds indicators to each issue, showing whether
+    it's a feature or a bug.  Ditz mode highlights these specially, if
+    they're found.
+
+``hg.rb``
+    A Ditz hook to automatically update Mercurial_ status when issues are
+    added or removed.  It can easily be customized to support other DVCSes
+    (e.g., **git** or **bzr**).
+
+Credits
+=======
+
+This is a much-enhanced version of the original_ Ditz mode, written by
+Kentaro Kuribayashi <kentarok@gmail.com>, and modified under the conditions
+of the GPLv3.
+
+.. _Ditz: http://ditz.rubyforge.org
+.. _Emacs: http://www.gnu.org/emacs
+.. _Mercurial: http://mercurial.selenic.com
+.. _Bitbucket: http://bitbucket.org/zondo/ditz-mode
+.. _original: http://github.com/kentaro/emacs-ditz/tree/master
 
 .. Local Variables:
 .. mode: rst
