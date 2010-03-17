@@ -247,8 +247,8 @@
   (previous-line)
   (ditz-show-other-window))
 
-(defun ditz-html ()
-  "Generate HTML files of issues."
+(defun ditz-html-generate ()
+  "Generate HTML files of issues, returning the created HTML file."
   (interactive)
   (ditz-call-process "html" nil)
   (when (search-forward "URL: " nil t)
@@ -259,7 +259,7 @@
 (defun ditz-html-browse ()
   "Generate and browse HTML files of issues."
   (interactive)
-  (browse-url-of-file (ditz-html)))
+  (browse-url-of-file (ditz-html-generate)))
 
 (defun ditz-archive ()
   "Archive a release."
@@ -535,7 +535,7 @@ current directory or the one with the .ditz-config file in it."
 
 (define-key ditz-mode-map "h" ditz-html-mode-map)
 
-(define-key ditz-html-mode-map "h" 'ditz-html)
+(define-key ditz-html-mode-map "g" 'ditz-html-generate)
 (define-key ditz-html-mode-map "b" 'ditz-html-browse)
 
 ;;;; Easymenu.
