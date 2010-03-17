@@ -134,13 +134,6 @@
   (interactive)
   (ditz-call-process "show" (ditz-current-issue) 'switch))
 
-(defun ditz-show-other-window ()
-  "Show issue details in another window."
-  (interactive)
-  (let ((issue-id (ditz-current-issue t)))
-    (when issue-id
-      (ditz-call-process "show" issue-id 'display-other))))
-
 (defun ditz-grep (regexp)
   "Show issue details."
   (interactive "sShow issues matching regexp: ")
@@ -216,6 +209,11 @@
   (interactive)
   (ditz-call-process "release" (ditz-current-release) 'switch t))
 
+(defun ditz-show-releases ()
+  "Show list of all releases."
+  (interactive)
+  (ditz-call-process "releases" nil 'pop))
+
 (defun ditz-toggle-status ()
   "Show/hide by issue status."
   (interactive)
@@ -223,7 +221,7 @@
       (setq ditz-todo-flags "-a")
     (setq ditz-todo-flags ""))
   (ditz-toggle-message)
-  (ditz-reload))
+  (ditz-todo))
 
 (defun ditz-toggle-release ()
   "Show/hide by release."
@@ -232,23 +230,23 @@
       (setq ditz-todo-release (ditz-current-release))
     (setq ditz-todo-release ""))
   (ditz-toggle-message)
-  (ditz-reload))
+  (ditz-todo))
 
-(defun ditz-next-issue ()
-  "Go to the next issue, maybe showing it in another window."
+(defun ditz-next-thing ()
+  "Go to the next thing, maybe showing it in another window."
   (interactive)
-  (forward-button 1 t)
-  (if (or (ditz-current-buffer-p "todo")
-	  (ditz-current-buffer-p "grep"))
-      (ditz-show-other-window)))
+  (if (ditz-current-buffer-p "releases")
+      (forward-line)
+    (forward-button 1 t))
+  (ditz-show-thing))
 
-(defun ditz-previous-issue ()
-  "Go to the previous issue, maybe showing it in another window."
+(defun ditz-previous-thing ()
+  "Go to the previous thing, maybe showing it in another window."
   (interactive)
-  (backward-button 1 t)
-  (if (or (ditz-current-buffer-p "todo")
-	  (ditz-current-buffer-p "grep"))
-      (ditz-show-other-window)))
+  (if (ditz-current-buffer-p "releases")
+      (forward-line -1)
+    (backward-button 1 t))
+  (ditz-show-thing))
 
 (defun ditz-html-generate ()
   "Generate HTML files of issues, returning the created HTML file."
@@ -295,6 +293,8 @@
          (ditz-call-process "todo" (ditz-todo-args) 'switch))
         ((ditz-current-buffer-p "status")
          (ditz-call-process "status" nil 'switch))
+        ((ditz-current-buffer-p "releases")
+         (ditz-call-process "releases" nil 'switch))
         ((ditz-current-buffer-p "show")
          (ditz-call-process "show" (ditz-current-issue) 'switch))
         ((ditz-current-buffer-p "shortlog")
@@ -311,7 +311,7 @@
   "Bury all Ditz buffers."
   (interactive)
   (delete-other-windows)
-  (dolist (name '("todo" "status" "show" "shortlog" "log" "grep"))
+  (dolist (name '("todo" "status" "show" "shortlog" "releases" "log" "grep"))
     (let ((buffer (get-buffer (ditz-buffer-name name))))
       (when buffer
 	(with-current-buffer buffer
@@ -343,9 +343,9 @@
 	    (t
 	     (error "No release on this line"))))))
 
-(defun ditz-todo-args ()
-  "Return current ditz todo arguments."
-  (format "%s %s" ditz-todo-flags ditz-todo-release))
+(defun ditz-todo-args (&optional release)
+  "Return current Ditz todo arguments."
+  (format "%s %s" ditz-todo-flags (or release ditz-todo-release)))
 
 (defun ditz-toggle-message ()
   "Give message based on current display settings."
@@ -475,6 +475,19 @@ current directory or the one with the .ditz-config file in it."
 	     (setq curdir (directory-file-name (file-name-directory curdir))))))
     (expand-file-name configfile)))
 
+(defun ditz-show-thing ()
+  "Show current thing in another window."
+  (cond ((or (ditz-current-buffer-p "todo")
+	     (ditz-current-buffer-p "grep"))
+	 (let ((issue-id (ditz-current-issue t)))
+	   (when issue-id
+	     (ditz-call-process "show" issue-id 'display-other))))
+	((ditz-current-buffer-p "releases")
+	 (let* ((release (ditz-current-release t))
+		(args (ditz-todo-args release)))
+	   (when release
+	     (ditz-call-process "todo" args 'display-other))))))
+
 (defun ditz-button-press (button)
   "Press button BUTTON to show an issue."
   (ditz-call-process "show" (button-label button) 'switch))
@@ -504,8 +517,10 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-mode-map "L" 'ditz-log)
 (define-key ditz-mode-map "s" 'ditz-grep)
 
-(define-key ditz-mode-map "n" 'ditz-next-issue)
-(define-key ditz-mode-map "p" 'ditz-previous-issue)
+(define-key ditz-mode-map "n" 'ditz-next-thing)
+(define-key ditz-mode-map "\t" 'ditz-next-thing)
+(define-key ditz-mode-map "p" 'ditz-previous-thing)
+(define-key ditz-mode-map [backtab] 'ditz-previous-thing)
 
 (define-key ditz-mode-map "S" 'ditz-toggle-status)
 (define-key ditz-mode-map "R" 'ditz-toggle-release)
@@ -547,8 +562,9 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-release-mode-map "e" 'ditz-edit-project)
 (define-key ditz-release-mode-map "r" 'ditz-release)
 (define-key ditz-release-mode-map "s" 'ditz-status)
-(define-key ditz-release-mode-map "l" 'ditz-changelog)
-(define-key ditz-release-mode-map "a" 'ditz-archive)
+(define-key ditz-release-mode-map "c" 'ditz-changelog)
+(define-key ditz-release-mode-map "l" 'ditz-show-releases)
+(define-key ditz-release-mode-map "A" 'ditz-archive)
 
 ;; HTML commands.
 (defvar ditz-html-mode-map (make-keymap)
@@ -567,9 +583,6 @@ current directory or the one with the .ditz-config file in it."
     ["TODO list"                        ditz-todo t]
     ["Current issue"                    ditz-show t]
     ["Issues matching regexp"           ditz-grep t]
-    "---"
-    ["Next issue"                       ditz-next-issue t]
-    ["Previous issue"                   ditz-previous-issue t]
     "---"
     ["Short log"                        ditz-shortlog t]
     ["Detailed log"                     ditz-log t]
@@ -600,6 +613,7 @@ current directory or the one with the .ditz-config file in it."
     "---"
     ["Show status"                      ditz-status t]
     ["Show changelog"                   ditz-changelog t]
+    ["Show all releases"                ditz-show-releases t]
     "---"
     ["Release"                          ditz-release t]
     ["Archive"                          ditz-archive t])
