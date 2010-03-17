@@ -277,6 +277,16 @@
   (interactive)
   (ditz-call-process "changelog" (ditz-current-release) 'display))
 
+(defun ditz-show-config ()
+  "Show pathname of the Ditz config file."
+  (interactive)
+  (message "Ditz config file: %s" (ditz-config-file)))
+
+(defun ditz-edit-config ()
+  "Edit the Ditz config file."
+  (interactive)
+  (find-file (ditz-config-file)))
+
 (defun ditz-reload ()
   "Reload the current Ditz buffer."
   (interactive)
@@ -421,7 +431,7 @@ directory for a .ditz-config file containing the issue_dir
 setting.  Then the issue directory is located either in the
 current directory or the one with the .ditz-config file in it."
 
-  (let* ((configfile (ditz-find-config))
+  (let* ((configfile (ditz-config-file))
 	 (parentdir (file-name-directory configfile))
 	 (buf (get-buffer-create "*ditz-config*"))
 	 (issuedir nil)
@@ -448,7 +458,7 @@ current directory or the one with the .ditz-config file in it."
 
     (expand-file-name issuedir)))
 
-(defun ditz-find-config ()
+(defun ditz-config-file ()
   "Find Ditz config file in current or parent directories."
 
   (let ((curdir (expand-file-name (file-name-directory default-directory)))
@@ -463,7 +473,7 @@ current directory or the one with the .ditz-config file in it."
 		    ditz-config-filename))
 	    (t
 	     (setq curdir (directory-file-name (file-name-directory curdir))))))
-    configfile))
+    (expand-file-name configfile)))
 
 (defun ditz-button-press (button)
   "Press button BUTTON to show an issue."
@@ -491,10 +501,16 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-mode-map " " 'ditz-show)
 (define-key ditz-mode-map "l" 'ditz-shortlog)
 (define-key ditz-mode-map "L" 'ditz-log)
-(define-key ditz-mode-map "/" 'ditz-grep)
+(define-key ditz-mode-map "s" 'ditz-grep)
 
 (define-key ditz-mode-map "n" 'ditz-next-issue)
 (define-key ditz-mode-map "p" 'ditz-previous-issue)
+
+(define-key ditz-mode-map "S" 'ditz-toggle-status)
+(define-key ditz-mode-map "R" 'ditz-toggle-release)
+
+(define-key ditz-mode-map "c" 'ditz-show-config)
+(define-key ditz-mode-map "C" 'ditz-edit-config)
 
 (define-key ditz-mode-map "g" 'ditz-reload)
 (define-key ditz-mode-map "q" 'ditz-quit)
@@ -533,15 +549,6 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-release-mode-map "l" 'ditz-changelog)
 (define-key ditz-release-mode-map "a" 'ditz-archive)
 
-;; Toggle commands.
-(defvar ditz-toggle-mode-map (make-keymap)
-  "*Keymap for Ditz toggle commands.")
-
-(define-key ditz-mode-map "t" ditz-toggle-mode-map)
-
-(define-key ditz-toggle-mode-map "s" 'ditz-toggle-status)
-(define-key ditz-toggle-mode-map "r" 'ditz-toggle-release)
-
 ;; HTML commands.
 (defvar ditz-html-mode-map (make-keymap)
   "*Keymap for Ditz HTML commands.")
@@ -557,6 +564,7 @@ current directory or the one with the .ditz-config file in it."
  '("Ditz"
    ("Display"
     ["Current issue"                    ditz-show t]
+    ["Issues matching regexp"           ditz-grep t]
     "---"
     ["Next issue"                       ditz-next-issue t]
     ["Previous issue"                   ditz-previous-issue t]
@@ -564,7 +572,8 @@ current directory or the one with the .ditz-config file in it."
     ["Short log"                        ditz-shortlog t]
     ["Detailed log"                     ditz-log t]
     "---"
-    ["Issues matching regexp"           ditz-grep t])
+    ["Toggle issue status"              ditz-toggle-status t]
+    ["Toggle release"         		ditz-toggle-release t])
 
    ("Issue"
     ["New"                              ditz-add t]
@@ -593,13 +602,13 @@ current directory or the one with the .ditz-config file in it."
     ["Release"                          ditz-release t]
     ["Archive"                          ditz-archive t])
 
-   ("Show/hide"
-    ["By issue status"                  ditz-toggle-status t]
-    ["By release"             		ditz-toggle-release t])
-
    ("HTML"
     ["Generate"                         ditz-html t]
-    ["Browse"                           ditz-html-browse t])
+    ["Generate and browse"              ditz-html-browse t])
+
+   ("Config"
+    ["Show config file path"            ditz-show-config t]
+    ["Edit config file"                 ditz-edit-config t])
 
    "---"
    ["Refresh"                           ditz-reload t]
@@ -607,6 +616,14 @@ current directory or the one with the .ditz-config file in it."
    ["Quit all"             		ditz-quit-all t]))
 
 ;;;; Faces.
+
+(defface ditz-issue-id-face
+  '((((class color) (background light))
+     (:foreground "blue" :weight bold))
+    (((class color) (background dark))
+     (:foreground "blue" :weight bold)))
+  "Face definition for issue id."
+  :group 'ditz)
 
 (defface ditz-issue-attr-face
   '((((class color) (background light))
@@ -648,6 +665,7 @@ current directory or the one with the .ditz-config file in it."
   "Face definition for bug indicators."
   :group 'ditz)
 
+(defconst ditz-issue-id-face 'ditz-issue-id-face)
 (defconst ditz-issue-attr-face 'ditz-issue-attr-face)
 (defconst ditz-release-name-face 'ditz-release-name-face)
 (defconst ditz-comment-face 'ditz-comment-face)
@@ -658,6 +676,7 @@ current directory or the one with the .ditz-config file in it."
   `((,ditz-issue-attr-regex (1 ditz-issue-attr-face t))
     (,ditz-log-attr-regex (1 ditz-issue-attr-face t))
     (,ditz-comment-regex (1 ditz-comment-face t))
+    (,ditz-issue-id-regex (1 ditz-issue-id-face t))
     (,ditz-release-name-regex (1 ditz-release-name-face t))
     (,ditz-feature-regex (1 ditz-feature-face t))
     (,ditz-bug-regex (1 ditz-bug-face t))))
