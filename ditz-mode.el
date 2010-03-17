@@ -498,6 +498,7 @@ current directory or the one with the .ditz-config file in it."
 (defvar ditz-mode-map (make-keymap)
   "*Keymap for Ditz major mode.")
 
+(define-key ditz-mode-map "t" 'ditz-todo)
 (define-key ditz-mode-map " " 'ditz-show)
 (define-key ditz-mode-map "l" 'ditz-shortlog)
 (define-key ditz-mode-map "L" 'ditz-log)
@@ -563,6 +564,7 @@ current directory or the one with the .ditz-config file in it."
 (easy-menu-define ditz-mode-menu ditz-mode-map "Ditz mode menu"
  '("Ditz"
    ("Display"
+    ["TODO list"                        ditz-todo t]
     ["Current issue"                    ditz-show t]
     ["Issues matching regexp"           ditz-grep t]
     "---"
