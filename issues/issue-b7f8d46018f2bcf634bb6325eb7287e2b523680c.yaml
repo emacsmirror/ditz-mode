@@ -1,0 +1,21 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Allow display of previous releases
+desc: |-
+  Old releases don't appear in the todo list; you have to explicitly
+  give the release ID to see them.  It'd be nice for the archive command
+  to be able to see them somehow.
+type: :task
+component: ditz-mode
+release: 
+reporter: Glenn Hutchings <zondo42@googlemail.com>
+status: :unstarted
+disposition: 
+creation_time: 2010-03-17 11:17:43.043984 Z
+references: []
+
+id: b7f8d46018f2bcf634bb6325eb7287e2b523680c
+log_events: 
+- - 2010-03-17 11:17:43.843801 Z
+  - Glenn Hutchings <zondo42@googlemail.com>
+  - created
+  - ""

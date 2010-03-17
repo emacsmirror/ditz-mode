@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Highlight issue status strings
+desc: ""
+type: :task
+component: ditz-mode
+release: 
+reporter: Glenn Hutchings <zondo42@googlemail.com>
+status: :unstarted
+disposition: 
+creation_time: 2010-03-17 10:25:14.395847 Z
+references: []
+
+id: 97ecafd03fa4b1690d3751760ada1fc44e328700
+log_events: 
+- - 2010-03-17 10:25:15.147811 Z
+  - Glenn Hutchings <zondo42@googlemail.com>
+  - created
+  - ""

@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Make initialization nicer
+desc: Maybe create ditz-config if it doesn't exist, prompting for user info.
+type: :task
+component: ditz-mode
+release: 
+reporter: Glenn Hutchings <zondo42@googlemail.com>
+status: :unstarted
+disposition: 
+creation_time: 2010-03-17 11:19:51.221409 Z
+references: []
+
+id: 5a8b0d644a37390d7e20dfac217d32d7c04257fa
+log_events: 
+- - 2010-03-17 11:19:51.669392 Z
+  - Glenn Hutchings <zondo42@googlemail.com>
+  - created
+  - ""
