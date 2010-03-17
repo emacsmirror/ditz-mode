@@ -1,3 +1,5 @@
+Patch for Ditz to add bug/feature tag display to issue names.
+
 diff --git a/lib/html.rb b/lib/html.rb
 --- a/lib/html.rb
 +++ b/lib/html.rb
