@@ -16,19 +16,33 @@ the terms of the GNU General Public License as published by the Free
 Software Foundation, either version 3 of the License, or (at your option)
 any later version.  See the file ``COPYING`` for details.
 
-Setting things up
-=================
-
-Put ``ditz-mode.el`` in your lisp load path and something like the
-following in your ``.emacs`` file::
-
-    (require 'ditz-mode)
-    (define-key global-map "\C-c\C-d" 'ditz-todo)
-
-Using Ditz mode
+Getting Started
 ===============
 
-WRITE ME.
+Setting up Ditz mode
+--------------------
+
+Put ``ditz-mode.el`` in your lisp load path and something like the
+following in your ``.emacs``::
+
+    (require 'ditz-mode)
+    (define-key global-map "\C-c\C-d" ditz-prefix)
+
+Setting up Ditz
+---------------
+
+At the moment, Ditz mode doesn't do the initial setup of Ditz.  You must
+run ``ditz init`` yourself to produce a ``.ditz-config`` file.  Ditz mode
+searches for this file, and reads it to get the name of the issue
+directory.  It looks first in the current directory, and then in parent
+directories.  Then it looks for the issue directory, first in the current
+directory, and then in the directory where it found ``.ditz-config``.
+
+Using Ditz mode
+---------------
+
+Once things are set up, you can use ``C-c C-d`` (or whatever prefix you
+chose) followed by ``C-h`` to get a list of valid commands.
 
 Other contributed stuff
 =======================
@@ -43,15 +57,13 @@ interested in:
 
 ``hg.rb``
     A Ditz hook to automatically update Mercurial_ status when issues are
-    added or removed.  It can easily be customized to support other DVCSes
-    (e.g., **git** or **bzr**).
+    added or removed.  It can easily be customized to support other DVCSes.
 
 Credits
 =======
 
-This is a much-enhanced version of the original_ Ditz mode, written by
-Kentaro Kuribayashi <kentarok@gmail.com>, and modified under the conditions
-of the GPLv3.
+Thanks to Kentaro Kuribayashi <kentarok@gmail.com>, author of the original_
+Ditz mode.  This is an almost (but not quite) complete rewrite.
 
 .. _Ditz: http://ditz.rubyforge.org
 .. _Emacs: http://www.gnu.org/emacs

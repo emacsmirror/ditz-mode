@@ -1,12 +1,11 @@
 ;;; ditz-mode.el --- Emacs interface to Ditz issue tracking system
 ;;
-;; Copyright (C) 2010 Kentaro Kuribayashi, Glenn Hutchings
+;; Copyright (C) 2010 Glenn Hutchings
 ;;
-;; Author: Kentaro Kuribayashi <kentarok@gmail.com>
-;;         Glenn Hutchings <zondo42@googlemail.com>
+;; Author:     Glenn Hutchings <zondo42@googlemail.com>
 ;; Maintainer: Glenn Hutchings <zondo42@googlemail.com>
-;; Keywords: tools
-;; Version: 0.1
+;; Keywords:   tools
+;; Version:    0.1
 ;;
 ;; This file is not a part of GNU Emacs.
 ;;
@@ -39,7 +38,13 @@
 ;;; History:
 ;;
 ;; Version 0.1 (17 Mar 2010):
-;;    First version.
+;;    First released version.
+;;
+;;; Credits:
+;;
+;; Thanks to Kentaro Kuribayashi <kentarok@gmail.com>, author of the
+;; original Ditz mode.  This was based on that version, but now hardly any
+;; of the original code remains.
 ;;
 ;;; Code:
 
