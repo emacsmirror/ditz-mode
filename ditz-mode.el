@@ -32,7 +32,7 @@
 ;; your .emacs file:
 ;;
 ;;     (require 'ditz-mode)
-;;     (define-key global-map "\C-c\C-d" 'ditz-todo)
+;;     (define-key global-map "\C-c\C-d" ditz-prefix)
 ;;
 ;; See the documentation for `ditz-mode' for more info.
 ;;
@@ -478,6 +478,8 @@ current directory or the one with the .ditz-config file in it."
 (defun ditz-show-thing ()
   "Show current thing in another window."
   (cond ((or (ditz-current-buffer-p "todo")
+	     (ditz-current-buffer-p "log")
+	     (ditz-current-buffer-p "shortlog")
 	     (ditz-current-buffer-p "grep"))
 	 (let ((issue-id (ditz-current-issue t)))
 	   (when issue-id
@@ -506,6 +508,21 @@ current directory or the one with the .ditz-config file in it."
   "*Hooks for Ditz major mode.")
 
 ;;;; Commands.
+
+;; Prefix commands.
+(defvar ditz-prefix (make-keymap)
+  "*Prefix for Ditz commands.")
+
+(define-key ditz-prefix "t" 'ditz-todo)
+(define-key ditz-prefix "l" 'ditz-shortlog)
+(define-key ditz-prefix "L" 'ditz-log)
+(define-key ditz-prefix "s" 'ditz-grep)
+(define-key ditz-prefix "r" 'ditz-show-releases)
+
+(define-key ditz-prefix "c" 'ditz-show-config)
+(define-key ditz-prefix "C" 'ditz-edit-config)
+(define-key ditz-prefix "g" 'ditz-html-generate)
+(define-key ditz-prefix "h" 'ditz-html-browse)
 
 ;; Main commands.
 (defvar ditz-mode-map (make-keymap)
