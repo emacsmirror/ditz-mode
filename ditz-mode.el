@@ -1,60 +1,61 @@
-;;; ditz-mode.el --- Emacs interface to Ditz issue tracking system 
-
+;;; ditz-mode.el --- Emacs interface to Ditz issue tracking system
+;;
 ;; Copyright (C) 2008-2010 Kentaro Kuribayashi, Glenn Hutchings
-
+;;
 ;; Author: Kentaro Kuribayashi <kentarok@gmail.com>
 ;;	Glenn Hutchings <zondo42@googlemail.com>
 ;; Maintainer: Glenn Hutchings <zondo42@googlemail.com>
 ;; Keywords: tools
 ;; Version: 0.1
-
+;;
 ;; This file is not a part of GNU Emacs.
-
+;;
 ;; This program is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by the
 ;; Free Software Foundation, either version 3 of the License, or (at your
 ;; option) any later version.
-
+;;
 ;; This program is distributed in the hope that it will be useful, but
 ;; WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ;; General Public License for more details.
-
+;;
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+;;
 ;;; Commentary:
-
+;;
 ;; This is an Emacs interface to the Ditz distributed issue tracking
 ;; system, which can be found at http://ditz.rubyforge.org.
 ;;
-;; Put this file in your lisp load path and something like the following in
+;; Put this file in your Lisp load path and something like the following in
 ;; your .emacs file:
 ;;
-;;     (require 'ditz)
+;;     (require 'ditz-mode)
 ;;     (define-key global-map "\C-c\C-d" 'ditz-todo)
 ;;
 ;; See the documentation for `ditz-mode' for more info.
-
+;;
+;;; History:
+;;
+;; Version 0.1 (17 Mar 2010):
+;;    First version.
+;;
 ;;; Code:
+
+;;;; Customizable stuff.
 
 (defgroup ditz nil
   "Interface to Ditz distributed bug tracker."
   :prefix "ditz-"
   :group 'tools)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Customizable variables.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defcustom ditz-program "ditz"
-  "Ditz command"
+  "Ditz command."
   :type 'string
   :group 'ditz)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Constants.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Constants.
 
 (defconst ditz-config-filename ".ditz-config"
   "File name of the Ditz config file.")
@@ -88,19 +89,15 @@
 (defconst ditz-bug-regex "(\\(bug\\))"
   "Regex for bug indicator.")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Variables.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Variables.
 
 (defvar ditz-todo-flags ""
-  "Flags to pass to ditz-todo.")
+  "Flags to pass to `ditz-todo'.")
 
 (defvar ditz-todo-release ""
-  "Release specified by ditz-todo.")
+  "Release specified by `ditz-todo'.")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Commands.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Commands.
 
 (defun ditz-todo ()
   "Show current todo list."
@@ -239,11 +236,13 @@
   (ditz-reload))
 
 (defun ditz-next-line ()
+  "Go to the next line, showing the issue in another window."
   (interactive)
   (next-line)
   (ditz-show-other-window))
 
 (defun ditz-previous-line ()
+  "Go to the previous line, showing the issue in another window."
   (interactive)
   (previous-line)
   (ditz-show-other-window))
@@ -277,6 +276,7 @@
     (ditz-call-process "changelog" release-name "display")))
 
 (defun ditz-reload ()
+  "Reload the current Ditz buffer."
   (interactive)
   (goto-char (point-min))
   (cond ((string= (buffer-name) "*ditz-todo*")
@@ -306,9 +306,7 @@
 	  (bury-buffer (current-buffer))
 	  (replace-buffer-in-windows))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Internal functions.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Internal functions.
 
 (defun ditz-todo-args ()
   "Return current ditz todo arguments."
@@ -316,7 +314,7 @@
 
 (defun ditz-toggle-message ()
   "Give message based on current display settings."
-  (message 
+  (message
    (concat "Showing "
 	   (if (string= ditz-todo-flags "")
 	       "unresolved" "all")
@@ -325,18 +323,21 @@
 	       "" (format "assigned to release %s" ditz-todo-release)))))
 
 (defun ditz-extract-issue (&optional noerror)
+  "Extract an issue ID from the current line."
   (let ((issue-id (ditz-extract-thing-at-point ditz-issue-id-regex 1)))
     (unless (or issue-id noerror)
       (error "No issue on this line"))
     issue-id))
 
 (defun ditz-extract-release (&optional noerror)
+  "Extract a release ID from the current line."
   (let ((release (ditz-extract-thing-at-point ditz-release-name-regex 1)))
     (unless (or release noerror)
       (error "No release on this line"))
     release))
 
 (defun ditz-extract-thing-at-point (regex n)
+  "Extract REGEX at the current point."
   (save-excursion
     (let ((line (buffer-substring-no-properties (progn
 						  (beginning-of-line)
@@ -365,7 +366,7 @@
 
     ;; If interactive and already running, ask for confirmation.
     (if (and interactive proc (eq (process-status proc) 'run))
-        (when (y-or-n-p (format "A %s process is running; kill it?"
+        (when (y-or-n-p (format "A %s process is running; kill it? "
                                 (process-name proc)))
           (interrupt-process proc)
           (sit-for 1)
@@ -407,9 +408,11 @@
       (goto-char (point-min)))))
 
 (defun ditz-project-file ()
+  "Return the pathname of the current project file."
   (concat (ditz-issue-directory) "/project.yaml"))
 
 (defun ditz-issue-file (id)
+  "Return the pathname of issue ID."
   (concat (ditz-issue-directory) "/issue-" id ".yaml"))
 
 (defun ditz-issue-directory ()
@@ -464,16 +467,12 @@ current directory or the one with the .ditz-config file in it."
 	     (setq curdir (directory-file-name (file-name-directory curdir))))))
     configfile))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Hooks.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Hooks.
 
 (defvar ditz-mode-hook nil
   "*Hooks for Ditz major mode.")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Commands.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Commands.
 
 ;; Main commands.
 (defvar ditz-mode-map (make-keymap)
@@ -539,9 +538,7 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-html-mode-map "h" 'ditz-html)
 (define-key ditz-html-mode-map "b" 'ditz-html-browse)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Easymenu.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Easymenu.
 
 (easy-menu-define ditz-mode-menu ditz-mode-map "Ditz mode menu"
  '("Ditz"
@@ -579,9 +576,7 @@ current directory or the one with the .ditz-config file in it."
    ["Quit Ditz buffer"                  ditz-quit t]
    ["Quit all Ditz buffers"             ditz-quit-all t]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Faces.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Faces.
 
 (defface ditz-issue-id-face
   '((((class color) (background light))
@@ -647,9 +642,7 @@ current directory or the one with the .ditz-config file in it."
     (,ditz-feature-regex (1 ditz-feature-face t))
     (,ditz-bug-regex (1 ditz-bug-face t))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Ditz major mode.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Ditz major mode.
 
 (define-derived-mode ditz-mode fundamental-mode "Ditz"
   "Major mode for the Ditz distributed issue tracker.
