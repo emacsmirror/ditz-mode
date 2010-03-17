@@ -482,12 +482,11 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-mode-map "l" 'ditz-shortlog)
 (define-key ditz-mode-map "L" 'ditz-log)
 (define-key ditz-mode-map "/" 'ditz-grep)
-(define-key ditz-mode-map "e" 'ditz-edit-project)
+(define-key ditz-mode-map "n" 'ditz-next-line)
+(define-key ditz-mode-map "p" 'ditz-previous-line)
 (define-key ditz-mode-map "g" 'ditz-reload)
 (define-key ditz-mode-map "q" 'ditz-quit)
 (define-key ditz-mode-map "Q" 'ditz-quit-all)
-(define-key ditz-mode-map "n" 'ditz-next-line)
-(define-key ditz-mode-map "p" 'ditz-previous-line)
 (define-key ditz-mode-map "?" 'describe-mode)
 
 ;; Issue commands.
@@ -515,6 +514,7 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-mode-map "r" ditz-release-mode-map)
 
 (define-key ditz-release-mode-map "n" 'ditz-add-release)
+(define-key ditz-release-mode-map "e" 'ditz-edit-project)
 (define-key ditz-release-mode-map "r" 'ditz-release)
 (define-key ditz-release-mode-map "s" 'ditz-status)
 (define-key ditz-release-mode-map "l" 'ditz-changelog)
@@ -542,42 +542,56 @@ current directory or the one with the .ditz-config file in it."
 
 (easy-menu-define ditz-mode-menu ditz-mode-map "Ditz mode menu"
  '("Ditz"
-   ["Edit project file"                 ditz-edit-project t]
+   ("Display"
+    ["Current issue"                    ditz-show t]
+    "---"
+    ["Next issue"                       ditz-next-line t]
+    ["Previous issue"                   ditz-previous-line t]
+    "---"
+    ["Short log"                        ditz-shortlog t]
+    ["Detailed log"                     ditz-log t]
+    "---"
+    ["Issues matching regexp"           ditz-grep t])
+
+   ("Issue"
+    ["New"                              ditz-add t]
+    ["Edit"                        	ditz-edit t]
+    "---"
+    ["Start working"            	ditz-start t]
+    ["Stop working"             	ditz-stop t]
+    "---"
+    ["Add comment"                  	ditz-comment t]
+    ["Add reference"            	ditz-add-reference t]
+    ["Set component"          		ditz-set-component t]
+    "---"
+    ["Assign to release"           	ditz-assign t]
+    ["Unassign"                    	ditz-unassign t]
+    "---"
+    ["Close"                       	ditz-close t]
+    ["Drop"                        	ditz-drop t])
+
+   ("Release"
+    ["New"                              ditz-add-release t]
+    ["Edit"                             ditz-edit-project t]
+    "---"
+    ["Show status"                      ditz-status t]
+    ["Show changelog"                   ditz-changelog t]
+    "---"
+    ["Release"                          ditz-release t]
+    ["Archive"                          ditz-archive t])
+
+   ("Show/hide"
+    ["By issue status"                  ditz-toggle-status t]
+    ["By release"             		ditz-toggle-release t])
+
+   ("HTML"
+    ["Generate"                         ditz-html t]
+    ["Browse"                           ditz-html-browse t])
+
    "---"
-   ["Show issue details"                ditz-show t]
-   ["Show short log"                    ditz-shortlog t]
-   ["Show detailed log"                 ditz-log t]
-   ["Show issues matching regexp"       ditz-grep t]
-   ["Show next issue"                   ditz-next-line t]
-   ["Show previous issue"               ditz-previous-line t]
-   "---"
-   ["New issue"                         ditz-add t]
-   ["Comment on issue"                  ditz-comment t]
-   ["Start working on issue"            ditz-start t]
-   ["Stop working on issue"             ditz-stop t]
-   ["Set an issue's component"          ditz-set-component t]
-   ["Add an issue reference"            ditz-add-reference t]
-   ["Assign issue to release"           ditz-assign t]
-   ["Unassign issue"                    ditz-unassign t]
-   ["Edit issue"                        ditz-edit t]
-   ["Close issue"                       ditz-close t]
-   ["Drop issue"                        ditz-drop t]
-   "---"
-   ["New release"                       ditz-add-release t]
-   ["Release a release"                 ditz-release t]
-   ["Show release status"               ditz-status t]
-   ["Show release changelog"            ditz-changelog t]
-   ["Archive a release"                 ditz-archive t]
-   "---"
-   ["Show/hide by issue status"         ditz-toggle-status t]
-   ["Show/hide by release"              ditz-toggle-release t]
-   "---"
-   ["Generate HTML summary"             ditz-html t]
-   ["Browse HTML summary"               ditz-html-browse t]
-   "---"
-   ["Refresh buffer"                    ditz-reload t]
-   ["Quit Ditz buffer"                  ditz-quit t]
-   ["Quit all Ditz buffers"             ditz-quit-all t]))
+   ["Refresh"                           ditz-reload t]
+   ["Quit"                              ditz-quit t]
+   ["Quit all"             		ditz-quit-all t]))
 
 ;;;; Faces.
 
