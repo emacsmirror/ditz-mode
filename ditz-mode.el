@@ -102,64 +102,64 @@
 (defun ditz-todo ()
   "Show current todo list."
   (interactive)
-  (ditz-call-process "todo" (ditz-todo-args) "switch"))
+  (ditz-call-process "todo" (ditz-todo-args) 'switch))
 
 (defun ditz-add ()
   "Add a new issue."
   (interactive)
-  (ditz-call-process "add" nil "pop" t))
+  (ditz-call-process "add" nil 'pop t))
 
 (defun ditz-add-release ()
   "Add a new release."
   (interactive)
-  (ditz-call-process "add-release" nil "pop" t))
+  (ditz-call-process "add-release" nil 'pop t))
 
 (defun ditz-status ()
   "Show status of issues."
   (interactive)
-  (ditz-call-process "status" nil "display"))
+  (ditz-call-process "status" nil 'display))
 
 (defun ditz-log ()
   "Show log of recent activities."
   (interactive)
-  (ditz-call-process "log" nil "pop"))
+  (ditz-call-process "log" nil 'pop))
 
 (defun ditz-shortlog ()
   "Show short log of recent activities."
   (interactive)
-  (ditz-call-process "shortlog" nil "pop"))
+  (ditz-call-process "shortlog" nil 'pop))
 
 (defun ditz-show ()
   "Show issue details."
   (interactive)
-  (ditz-call-process "show" (ditz-current-issue) "switch"))
+  (ditz-call-process "show" (ditz-current-issue) 'switch))
 
 (defun ditz-show-other-window ()
   "Show issue details in another window."
   (interactive)
   (let ((issue-id (ditz-current-issue t)))
     (when issue-id
-      (ditz-call-process "show" issue-id "display-other"))))
+      (ditz-call-process "show" issue-id 'display-other))))
 
 (defun ditz-grep (regexp)
   "Show issue details."
   (interactive "sShow issues matching regexp: ")
-  (ditz-call-process "grep" regexp "pop"))
+  (ditz-call-process "grep" (concat "\"" regexp "\"") 'pop))
 
 (defun ditz-assign ()
   "Assign issue to a release."
   (interactive)
-  (ditz-call-process "assign" (ditz-current-issue) "switch" t))
+  (ditz-call-process "assign" (ditz-current-issue) 'switch t))
 
 (defun ditz-unassign ()
   "Unassign an issue."
   (interactive)
-  (ditz-call-process "unassign" (ditz-current-issue) "switch" t))
+  (ditz-call-process "unassign" (ditz-current-issue) 'switch t))
 
 (defun ditz-comment ()
   "Comment on an issue."
   (interactive)
-  (ditz-call-process "comment" (ditz-current-issue) "pop" t))
+  (ditz-call-process "comment" (ditz-current-issue) 'pop t))
 
 (defun ditz-edit ()
   "Edit issue details."
@@ -182,39 +182,39 @@
 (defun ditz-close ()
   "Close an issue."
   (interactive)
-  (ditz-call-process "close" (ditz-current-issue) "switch" t))
+  (ditz-call-process "close" (ditz-current-issue) 'switch t))
 
 (defun ditz-drop ()
   "Drop an issue."
   (interactive)
   (let ((issue-id (ditz-current-issue)))
     (when (yes-or-no-p (concat "Drop " issue-id " "))
-      (ditz-call-process "drop" issue-id "switch"))))
+      (ditz-call-process "drop" issue-id 'switch))))
 
 (defun ditz-start ()
   "Start work on an issue."
   (interactive)
-  (ditz-call-process "start" (ditz-current-issue) "switch" t))
+  (ditz-call-process "start" (ditz-current-issue) 'switch t))
 
 (defun ditz-stop ()
   "Stop work on an issue."
   (interactive)
-  (ditz-call-process "stop" (ditz-current-issue) "switch" t))
+  (ditz-call-process "stop" (ditz-current-issue) 'switch t))
 
 (defun ditz-set-component ()
   "Set an issue's component."
   (interactive)
-  (ditz-call-process "set-component" (ditz-current-issue) "switch" t))
+  (ditz-call-process "set-component" (ditz-current-issue) 'switch t))
 
 (defun ditz-add-reference ()
   "Add an issue reference."
   (interactive)
-  (ditz-call-process "add-reference" (ditz-current-issue) "switch" t))
+  (ditz-call-process "add-reference" (ditz-current-issue) 'switch t))
 
 (defun ditz-release ()
   "Mark release as released."
   (interactive)
-  (ditz-call-process "release" (ditz-current-release) "switch" t))
+  (ditz-call-process "release" (ditz-current-release) 'switch t))
 
 (defun ditz-toggle-status ()
   "Show/hide by issue status."
@@ -235,17 +235,19 @@
   (ditz-reload))
 
 (defun ditz-next-issue ()
-  "Go to the next line, showing the issue in another window."
+  "Go to the next issue, maybe showing it in another window."
   (interactive)
   (forward-button 1 t)
-  (if (string= (buffer-name) "*ditz-todo*")
+  (if (or (ditz-current-buffer-p "todo")
+	  (ditz-current-buffer-p "grep"))
       (ditz-show-other-window)))
 
 (defun ditz-previous-issue ()
-  "Go to the previous line, showing the issue in another window."
+  "Go to the previous issue, maybe showing it in another window."
   (interactive)
   (backward-button 1 t)
-  (if (string= (buffer-name) "*ditz-todo*")
+  (if (or (ditz-current-buffer-p "todo")
+	  (ditz-current-buffer-p "grep"))
       (ditz-show-other-window)))
 
 (defun ditz-html-generate ()
@@ -267,31 +269,31 @@
   (interactive)
   (let ((release-name (ditz-current-release)))
     (when (yes-or-no-p (concat "Archive release " release-name "? "))
-      (ditz-call-process "archive" release-name "display")
+      (ditz-call-process "archive" release-name 'display)
       (ditz-reload))))
 
 (defun ditz-changelog ()
   "Show change log for a release."
   (interactive)
-  (ditz-call-process "changelog" (ditz-current-release) "display"))
+  (ditz-call-process "changelog" (ditz-current-release) 'display))
 
 (defun ditz-reload ()
   "Reload the current Ditz buffer."
   (interactive)
   (goto-char (point-min))
-  (cond ((string= (buffer-name) "*ditz-todo*")
-         (ditz-call-process "todo" (ditz-todo-args) "switch"))
-        ((string= (buffer-name) "*ditz-status*")
-         (ditz-call-process "status" nil "switch"))
-        ((string= (buffer-name) "*ditz-show*")
-         (ditz-call-process "show" (ditz-current-issue) "switch"))
-        ((string= (buffer-name) "*ditz-shortlog*")
-	 (ditz-call-process "shortlog" nil "switch"))
-        ((string= (buffer-name) "*ditz-log*")
-         (ditz-call-process "log" nil "switch"))))
+  (cond ((ditz-current-buffer-p "todo")
+         (ditz-call-process "todo" (ditz-todo-args) 'switch))
+        ((ditz-current-buffer-p "status")
+         (ditz-call-process "status" nil 'switch))
+        ((ditz-current-buffer-p "show")
+         (ditz-call-process "show" (ditz-current-issue) 'switch))
+        ((ditz-current-buffer-p "shortlog")
+	 (ditz-call-process "shortlog" nil 'switch))
+        ((ditz-current-buffer-p "log")
+         (ditz-call-process "log" nil 'switch))))
 
 (defun ditz-quit ()
-  "Bury current Ditz buffer."
+  "Bury the current Ditz buffer."
   (interactive)
   (bury-buffer))
 
@@ -300,7 +302,7 @@
   (interactive)
   (delete-other-windows)
   (dolist (name '("todo" "status" "show" "shortlog" "log" "grep"))
-    (let ((buffer (get-buffer (concat "*ditz-" name "*"))))
+    (let ((buffer (get-buffer (ditz-buffer-name name))))
       (when buffer
 	(with-current-buffer buffer
 	  (bury-buffer (current-buffer))
@@ -352,7 +354,7 @@
 	 (quoteddir (concat "\"" issuedir "\""))
 	 (cmd (mapconcat 'identity
 			 (list ditz-program "-i" quoteddir command arg) " "))
-	 (bufname (concat "*ditz-" command "*"))
+	 (bufname (ditz-buffer-name command))
 	 (buffer (get-buffer-create bufname))
          (proc (get-buffer-process buffer)))
 
@@ -384,20 +386,19 @@
       (call-process-shell-command cmd nil buffer))
 
     ;; Display results.
-    (cond ((string= popup-flag "switch")
+    (cond ((eq popup-flag 'switch)
 	   (switch-to-buffer buffer))
-          ((string= popup-flag "pop")
+          ((eq popup-flag 'pop)
            (pop-to-buffer buffer))
-          ((string= popup-flag "display")
+          ((eq popup-flag 'display)
            (display-buffer buffer))
-          ((string= popup-flag "display-other")
+          ((eq popup-flag 'display-other)
 	   (with-current-buffer buffer
 	     (ditz-mode)
 	     (goto-char (point-min)))
            (display-buffer buffer))
           (t
            (set-buffer buffer)))
-
 
     ;; Go to Ditz mode if required.
     (when (and (not interactive) (eq buffer (current-buffer)))
@@ -466,7 +467,15 @@ current directory or the one with the .ditz-config file in it."
 
 (defun ditz-button-press (button)
   "Press button BUTTON to show an issue."
-  (ditz-call-process "show" (button-label button) "switch"))
+  (ditz-call-process "show" (button-label button) 'switch))
+
+(defun ditz-buffer-name (cmd)
+  "Return buffer name for command CMD."
+  (concat "*ditz-" cmd "*"))
+
+(defun ditz-current-buffer-p (cmd)
+  "Return whether the current buffer has output of command CMD."
+  (string= (buffer-name) (ditz-buffer-name cmd)))
 
 ;;;; Hooks.
 
