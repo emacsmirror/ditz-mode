@@ -1,9 +1,9 @@
 ;;; ditz-mode.el --- Emacs interface to Ditz issue tracking system
 ;;
-;; Copyright (C) 2008-2010 Kentaro Kuribayashi, Glenn Hutchings
+;; Copyright (C) 2010 Kentaro Kuribayashi, Glenn Hutchings
 ;;
 ;; Author: Kentaro Kuribayashi <kentarok@gmail.com>
-;;	Glenn Hutchings <zondo42@googlemail.com>
+;;         Glenn Hutchings <zondo42@googlemail.com>
 ;; Maintainer: Glenn Hutchings <zondo42@googlemail.com>
 ;; Keywords: tools
 ;; Version: 0.1
@@ -60,7 +60,7 @@
 (defconst ditz-config-filename ".ditz-config"
   "File name of the Ditz config file.")
 
-(defconst ditz-issue-id-regex "\\([a-z]+-[0-9]+\\)"
+(defconst ditz-issue-id-regex "\\([a-z][a-z-]*-[0-9]+\\)"
   "Regex for issue id.")
 
 (defconst ditz-issue-attr-regex
@@ -542,11 +542,14 @@ current directory or the one with the .ditz-config file in it."
 
 (easy-menu-define ditz-mode-menu ditz-mode-map "Ditz mode menu"
  '("Ditz"
+   ["Edit project file"                 ditz-edit-project t]
+   "---"
    ["Show issue details"                ditz-show t]
    ["Show short log"                    ditz-shortlog t]
    ["Show detailed log"                 ditz-log t]
    ["Show issues matching regexp"       ditz-grep t]
-   ["Edit project file"                 ditz-edit-project t]
+   ["Show next issue"                   ditz-next-line t]
+   ["Show previous issue"               ditz-previous-line t]
    "---"
    ["New issue"                         ditz-add t]
    ["Comment on issue"                  ditz-comment t]
