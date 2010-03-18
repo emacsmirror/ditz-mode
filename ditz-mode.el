@@ -540,9 +540,9 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-mode-map "s" 'ditz-grep)
 
 (define-key ditz-mode-map "n" 'ditz-next-thing)
-(define-key ditz-mode-map "\t" 'ditz-next-thing)
+(define-key ditz-mode-map (kbd "TAB") 'ditz-next-thing)
 (define-key ditz-mode-map "p" 'ditz-previous-thing)
-(define-key ditz-mode-map "\e\t" 'ditz-previous-thing)
+(define-key ditz-mode-map (kbd "<backtab>") 'ditz-previous-thing)
 
 (define-key ditz-mode-map "S" 'ditz-toggle-status)
 (define-key ditz-mode-map "R" 'ditz-toggle-release)
