@@ -1,6 +1,6 @@
 ;;; ditz-mode.el --- Emacs interface to Ditz issue tracking system
 ;;
-;; Copyright (C) 2010 Glenn Hutchings
+;; Copyright (C) 2008-2010 Kentaro Kuribayashi, Glenn Hutchings
 ;;
 ;; Author:     Glenn Hutchings <zondo42@googlemail.com>
 ;; Maintainer: Glenn Hutchings <zondo42@googlemail.com>
@@ -37,7 +37,7 @@
 ;;
 ;;; History:
 ;;
-;; Version 0.1 (17 Mar 2010):
+;; Version 0.1 (21 Mar 2010):
 ;;    First released version.
 ;;
 ;;; Credits:
