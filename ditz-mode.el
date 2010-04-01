@@ -527,7 +527,7 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-prefix "c" 'ditz-show-config)
 (define-key ditz-prefix "C" 'ditz-edit-config)
 (define-key ditz-prefix "g" 'ditz-html-generate)
-(define-key ditz-prefix "h" 'ditz-html-browse)
+(define-key ditz-prefix "b" 'ditz-html-browse)
 
 ;; Main commands.
 (defvar ditz-mode-map (make-keymap)
@@ -641,7 +641,7 @@ current directory or the one with the .ditz-config file in it."
     ["Archive"                          ditz-archive t])
 
    ("HTML"
-    ["Generate"                         ditz-html t]
+    ["Generate"                         ditz-html-generate t]
     ["Generate and browse"              ditz-html-browse t])
 
    ("Config"
