@@ -55,9 +55,10 @@ interested in:
     it's a feature or a bug.  Ditz mode highlights these specially, if
     they're found.
 
-``hg.rb``
-    A Ditz hook to automatically update Mercurial_ status when issues are
-    added or removed.  It can easily be customized to support other DVCSes.
+``vcs.rb``
+    A Ditz hook to automatically update version control status when issues
+    are added or removed.  At the moment it supports Mercurial_, CVS and
+    SVN.
 
 Credits
 =======
