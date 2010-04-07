@@ -6,8 +6,6 @@ import os
 import yaml
 import glob
 
-_ditz_tag = "ditz.rubyforge.org,2008-03-06"
-
 class Ditz(object):
     def __init__(self, issuedir = "issues"):
         self.issuedir = issuedir
@@ -24,29 +22,33 @@ class Ditz(object):
             yield self._read(path)
 
     def _read(self, path):
-        fp = open(path)
-        data = yaml.load(fp)
-        fp.close()
-
-        return data
+        return yaml.safe_load(open(path))
 
     def _write(self, data, path):
         fp = open(path, "w")
         data = yaml.dump(data, fp, default_flow_style = False)
         fp.close()
 
-class Project(yaml.YAMLObject):
-    yaml_tag = u'!%s/project' % _ditz_tag
+class DitzObject(yaml.YAMLObject):
+    yaml_loader = yaml.SafeLoader
+    ditz_tag = "!ditz.rubyforge.org,2008-03-06"
+
+class Config(DitzObject):
+    yaml_tag = DitzObject.ditz_tag + '/config'
+    filename = ".ditz-config"
+
+class Project(DitzObject):
+    yaml_tag = DitzObject.ditz_tag + '/project'
     filename = "project.yaml"
 
-class Component(yaml.YAMLObject):
-    yaml_tag = u'!%s/component' % _ditz_tag
+class Component(DitzObject):
+    yaml_tag = DitzObject.ditz_tag + '/component'
 
-class Release(yaml.YAMLObject):
-    yaml_tag = u'!%s/release' % _ditz_tag
+class Release(DitzObject):
+    yaml_tag = DitzObject.ditz_tag + '/release'
 
-class Issue(yaml.YAMLObject):
-    yaml_tag = u'!%s/issue' % _ditz_tag
+class Issue(DitzObject):
+    yaml_tag = DitzObject.ditz_tag + '/issue'
     template = "issue-%s.yaml"
 
     @property
