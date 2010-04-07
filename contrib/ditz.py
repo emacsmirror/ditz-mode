@@ -12,19 +12,16 @@ class Ditz(object):
     def __init__(self, issuedir = "issues"):
         self.issuedir = issuedir
 
-        # Read the project file.
         path = os.path.join(issuedir, Project.filename)
         if os.path.exists(path):
             self.project = self._read(path)
         else:
             raise DitzError("'%s' is not a Ditz issue directory" % issuedir)
 
-        # Read the issues.
-        self.issues = []
-        match = os.path.join(issuedir, Issue.template % "*")
+    def __iter__(self):
+        match = os.path.join(self.issuedir, Issue.template % "*")
         for path in glob.glob(match):
-            issue = self._read(path)
-            self.issues.append(issue)
+            yield self._read(path)
 
     def _read(self, path):
         fp = open(path)
@@ -62,6 +59,13 @@ if __name__ == "__main__":
     ditz = Ditz()
 
     print ditz.project.name
+
+    print "Releases:"
+    for release in ditz.project.releases:
+        date = release.release_time 
+        print "   %s [%s]" % (release.name,
+                              date if date else "unreleased")
+
     print "Issues:"
-    for issue in ditz.issues:
+    for issue in ditz:
         print "   %s [%s]" % (issue.title, issue.type)
