@@ -28,6 +28,8 @@ class Ditz(object):
         data = yaml.load(fp)
         fp.close()
 
+        return data
+
     def write(self, data, path):
         fp = open(path, "w")
         data = yaml.dump(data, fp, default_flow_style = False)
@@ -53,5 +55,8 @@ class DitzError(Exception): pass
 
 if __name__ == "__main__":
     ditz = Ditz()
+
+    print ditz.project.name
+    print
     for issue in ditz.issues():
-        print issue.title, issue.filename
+        print issue.title
