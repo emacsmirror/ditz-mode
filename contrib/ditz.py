@@ -1,5 +1,8 @@
 """
 Python interface to Ditz issue tracker (http://ditz.rubyforge.org).
+
+@bug: write/read issue produces ditz error: Time/String comparison, due to
+Z being omitted from output.
 """
 
 import os
@@ -8,12 +11,13 @@ import glob
 
 class Ditz(object):
     def __init__(self, basedir = None):
-        # Set base directory for searching.
-        self.basedir = basedir if basedir else os.getcwd()
+        # Look in current directory if required.
+        if not basedir:
+            basedir = os.getcwd()
 
         # Find and read the Ditz config file.
-        path = self._find(Config.filename)
-        self.config = self._read(path)
+        path = find_file(basedir, Config.filename)
+        self.config = read_yaml(path)
 
         # Extract the issue directory name.
         try:
@@ -22,50 +26,28 @@ class Ditz(object):
             raise DitzError("'%s' does not define 'issue_dir'" % path)
 
         # Find the issue directory.
-        self.issuedir = self._find(dirname)
+        self.issuedir = find_file(basedir, dirname)
 
         # Read the project file.
         path = os.path.join(self.issuedir, Project.filename)
-        self.project = self._read(path)
+        self.project = read_yaml(path)
 
     def __iter__(self):
         """Iterate over all issues."""
 
         match = os.path.join(self.issuedir, Issue.template % "*")
         for path in glob.glob(match):
-            yield self._read(path)
-
-    def _find(self, filename):
-        """Find a filename in or above the base directory."""
-
-        curdir = self.basedir
-
-        while True:
-            path = os.path.join(curdir, filename)
-            if os.path.exists(path):
-                return path
-            elif curdir != "/":
-                curdir = os.path.split(curdir)[0]
-            else:
-                raise DitzError("can't find '%s' in or above '%s'"
-                                % (filename, self.basedir))
-
-    def _read(self, path):
-        """Read YAML data from a file."""
-        return yaml.safe_load(open(path))
-
-    def _write(self, data, path):
-        """Write YAML data to a file."""
-
-        fp = open(path, "w")
-        data = yaml.dump(data, fp, default_flow_style = False)
-        fp.close()
+            yield read_yaml(path)
 
 class DitzError(Exception): pass
 
 class DitzObject(yaml.YAMLObject):
     yaml_loader = yaml.SafeLoader
     ditz_tag = "!ditz.rubyforge.org,2008-03-06"
+
+    def write(self, issuedir):
+        path = os.path.join(issuedir, self.filename)
+        write_yaml(self, path)
 
 class Config(DitzObject):
     yaml_tag = DitzObject.ditz_tag + '/config'
@@ -89,6 +71,32 @@ class Issue(DitzObject):
     def filename(self):
         return self.template % self.id
 
+def read_yaml(path):
+    """Read YAML data from a file."""
+    return yaml.safe_load(open(path))
+
+def write_yaml(data, path):
+    """Write YAML data to a file."""
+
+    fp = open(path, "w")
+    data = yaml.dump(data, fp, default_flow_style = False)
+    fp.close()
+
+def find_file(basedir, filename):
+    """Find a filename in or above the base directory."""
+
+    curdir = basedir
+
+    while True:
+        path = os.path.join(curdir, filename)
+        if os.path.exists(path):
+            return path
+        elif curdir != "/":
+            curdir = os.path.split(curdir)[0]
+        else:
+            raise DitzError("can't find '%s' in or above '%s'"
+                            % (filename, basedir))
+
 def _test(basedir = None):
     ditz = Ditz(basedir)
 
@@ -108,5 +116,7 @@ def _test(basedir = None):
     for issue in ditz:
         print "   %s [%s]" % (issue.title, issue.type[1:])
     
+    issue.write(".")
+
 if __name__ == "__main__":
     _test()
