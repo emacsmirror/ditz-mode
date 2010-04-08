@@ -1,5 +1,5 @@
 """
-Python interface to Ditz issue directory.
+Python interface to Ditz issue tracker (http://ditz.rubyforge.org).
 """
 
 import os
@@ -89,13 +89,13 @@ class Issue(DitzObject):
     def filename(self):
         return self.template % self.id
 
-if __name__ == "__main__":
-    ditz = Ditz()
+def _test(basedir = None):
+    ditz = Ditz(basedir)
 
-    print "%s <%s>" % (ditz.config.name, ditz.config.email)
+    print "User: %s <%s>" % (ditz.config.name, ditz.config.email)
 
     print
-    print ditz.project.name
+    print "Project:", ditz.project.name
 
     print
     print "Releases:"
@@ -106,4 +106,7 @@ if __name__ == "__main__":
     print
     print "Issues:"
     for issue in ditz:
-        print "   %s [%s]" % (issue.title, issue.type)
+        print "   %s [%s]" % (issue.title, issue.type[1:])
+    
+if __name__ == "__main__":
+    _test()
