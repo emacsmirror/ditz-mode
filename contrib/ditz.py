@@ -1,11 +1,14 @@
 """
 Python interface to Ditz issue tracker (http://ditz.rubyforge.org).
 
+@todo: lazy reading of issues.
+
 @bug: write/read issue produces ditz error: Time/String comparison, due to
 Z being omitted from output.
 """
 
 import os
+import csv
 import yaml
 import glob
 
@@ -32,6 +35,21 @@ class Ditz(object):
         path = os.path.join(self.issuedir, Project.filename)
         self.project = read_yaml(path)
 
+    def write_csv(self, path, *attrs):
+        """Write issues to CSV file."""
+
+        if not attrs:
+            attrs = Issue.attributes
+
+        fp = open(path, "w")
+        writer = csv.writer(fp)
+
+        writer.writerow([attr.capitalize() for attr in attrs])
+        for issue in sorted(self):
+            writer.writerow([getattr(issue, attr) for attr in attrs])
+
+        fp.close()
+
     def __iter__(self):
         """Iterate over all issues."""
 
@@ -52,24 +70,41 @@ class DitzObject(yaml.YAMLObject):
 class Config(DitzObject):
     yaml_tag = DitzObject.ditz_tag + '/config'
     filename = ".ditz-config"
+    attributes = ["name", "email", "issue_dir"]
 
 class Project(DitzObject):
     yaml_tag = DitzObject.ditz_tag + '/project'
     filename = "project.yaml"
+    attributes = ["name", "version", "components", "releases"]
 
 class Component(DitzObject):
     yaml_tag = DitzObject.ditz_tag + '/component'
 
 class Release(DitzObject):
     yaml_tag = DitzObject.ditz_tag + '/release'
+    attributes = ["name", "status", "release_time", "log_events"]
+
+    def __str__(self):
+        return "%(name)s (%(release_time)s)" % self.__dict__
 
 class Issue(DitzObject):
     yaml_tag = DitzObject.ditz_tag + '/issue'
     template = "issue-%s.yaml"
+    attributes = ["title", "desc", "type", "component", "release",
+                  "status", "disposition"]
 
     @property
     def filename(self):
         return self.template % self.id
+
+    def __cmp__(self, other):
+        return (cmp(self.status, other.status) or
+                cmp(self.type, other.type) or
+                cmp(self.title, other.title) or
+                0)
+
+    def __str__(self):
+        return "%(title)s (%(type)s)" % self.__dict__
 
 def read_yaml(path):
     """Read YAML data from a file."""
@@ -108,15 +143,14 @@ def _test(basedir = None):
     print
     print "Releases:"
     for release in ditz.project.releases:
-        date = release.release_time 
-        print "   %s [%s]" % (release.name, date if date else "unreleased")
+        print "   ", release
 
     print
     print "Issues:"
-    for issue in ditz:
-        print "   %s [%s]" % (issue.title, issue.type[1:])
-    
-    issue.write(".")
+    for issue in sorted(ditz):
+        print "   ", issue
 
+    #ditz.write_csv("issues.csv", "title", "desc", "type", "release", "status")
+    
 if __name__ == "__main__":
     _test()
