@@ -60,12 +60,6 @@ interested in:
     are added or removed.  At the moment it supports Mercurial_, CVS and
     SVN.
 
-``ditz.py``
-    A very simple Python interface to the Ditz issue directory.  I might
-    expand this into something more complete and useful at some point.  If
-    you're interested in something like this, you might want to check out
-    Pitz_ instead.
-
 Credits
 =======
 
@@ -73,7 +67,6 @@ Thanks to Kentaro Kuribayashi <kentarok@gmail.com>, author of the original_
 Ditz mode.  This is an almost (but not quite) complete rewrite.
 
 .. _Ditz: http://ditz.rubyforge.org
-.. _Pitz: http://pypi.python.org/pitz
 .. _Emacs: http://www.gnu.org/emacs
 .. _Mercurial: http://mercurial.selenic.com
 .. _Bitbucket: http://bitbucket.org/zondo/ditz-mode
