@@ -102,11 +102,18 @@
 (defvar ditz-todo-release ""
   "Release specified by `ditz-todo'.")
 
+(defvar ditz-todo-lastdir nil
+  "Last issue directory visited by `ditz-todo'.")
+
 ;;;; Commands.
 
 (defun ditz-todo ()
   "Show current todo list."
   (interactive)
+  (let ((issuedir (ditz-issue-directory)))
+    (unless (equal issuedir ditz-todo-lastdir)
+      (setq ditz-todo-release ""))
+    (setq ditz-todo-lastdir issuedir))
   (ditz-call-process "todo" (ditz-todo-args) 'switch))
 
 (defun ditz-add ()
