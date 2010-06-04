@@ -60,6 +60,11 @@
   :type 'string
   :group 'ditz)
 
+(defcustom ditz-log-count ""
+  "Number of log entries to show."
+  :type 'string
+  :group 'ditz)
+
 ;;;; Constants.
 
 (defconst ditz-config-filename ".ditz-config"
@@ -134,12 +139,12 @@
 (defun ditz-log ()
   "Show log of recent activities."
   (interactive)
-  (ditz-call-process "log" nil 'pop))
+  (ditz-call-process "log" ditz-log-count 'pop))
 
 (defun ditz-shortlog ()
   "Show short log of recent activities."
   (interactive)
-  (ditz-call-process "shortlog" nil 'pop))
+  (ditz-call-process "shortlog" ditz-log-count 'pop))
 
 (defun ditz-show ()
   "Show issue details."

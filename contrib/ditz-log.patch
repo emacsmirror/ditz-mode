@@ -1,0 +1,51 @@
+Add optional count to log/shortlog commands.
+
+diff --git a/lib/operator.rb b/lib/operator.rb
+--- a/lib/operator.rb
++++ b/lib/operator.rb
+@@ -518,8 +518,11 @@ EOS
+     puts(todo_list_for(issues) || "No matching issues.")
+   end
+ 
+-  operation :log, "Show recent activity"
+-  def log project, config
++  operation :log, "Show recent activity", :maybe_count do
++    opt :count, "Show specified number of log entries", :default => 0
++  end
++  def log project, config, opts, count
++    count = count.to_i
+     project.issues.map { |i| i.log_events.map { |e| [e, i] } }.
+       flatten_one_level.sort_by { |e| e.first.first }.reverse.
+       each do |(date, author, what, comment), i|
+@@ -531,12 +534,17 @@ issue  : [#{i.name}] #{i.title}
+   #{what}
+ #{comment.gsub(/^/, "  > ") unless comment =~ /^\A\s*\z/}
+ EOS
+-    puts unless comment.blank?
++      puts unless comment.blank?
++      count -= 1
++      break if count == 0
+     end
+   end
+ 
+-  operation :shortlog, "Show recent activity (short form)"
+-  def shortlog project, config
++  operation :shortlog, "Show recent activity (short form)", :maybe_count do
++    opt :count, "Show specified number of log entries", :default => 0
++  end
++  def shortlog project, config, opts, count
++    count = count.to_i
+     project.issues.map { |i| i.log_events.map { |e| [e, i] } }.
+       flatten_one_level.sort_by { |e| e.first.first }.reverse.
+       each do |(date, author, what, comment), i|
+@@ -547,7 +555,9 @@ EOS
+         end[0..15]
+         printf "%10s | %10s | %16s | %s\n", date.ago, i.name, shortauthor,
+           what
+-      end
++        count -= 1
++        break if count == 0
++     end
+   end
+ 
+   operation :archive, "Archive a release", :release, :maybe_dir
