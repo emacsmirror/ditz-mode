@@ -456,7 +456,7 @@ current directory or the one with the .ditz-config file in it."
 
     ;; Get issue directory name from config file.
     (with-current-buffer buf
-      (insert-file-contents-literally configfile nil nil nil t)
+      (insert-file-contents configfile nil nil nil t)
       (goto-char (point-min))
       (if (search-forward "issue_dir: ")
 	  (setq issuedirname (buffer-substring (point) (line-end-position)))
