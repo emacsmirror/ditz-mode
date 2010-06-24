@@ -574,8 +574,8 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-prefix "s" 'ditz-grep)
 (define-key ditz-prefix "r" 'ditz-show-releases)
 
-(define-key ditz-prefix "c" 'ditz-show-config)
-(define-key ditz-prefix "C" 'ditz-edit-config)
+(define-key ditz-prefix "C" 'ditz-show-claimed)
+(define-key ditz-prefix "U" 'ditz-show-unclaimed)
 
 (define-key ditz-prefix "g" 'ditz-html-generate)
 (define-key ditz-prefix "b" 'ditz-html-browse)
