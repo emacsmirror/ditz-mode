@@ -76,10 +76,23 @@
 (defconst ditz-issue-attr-regex "\\(^[A-Za-z ]\\{11\\}\\): "
   "Regex for issue attribute.")
 
-(defconst ditz-issue-status-regex
-  (concat (regexp-opt '("unstarted" "in_progress" "fixed" "wontfix"
-			"reorg") 'words) ":")
-  "Regex for issue status.")
+(defconst ditz-issue-unstarted-regex "Status: \\(unstarted\\)"
+  "Regex for issue unstarted status.")
+
+(defconst ditz-issue-progress-regex "Status: \\(in progress\\)"
+  "Regex for issue in-progress status.")
+
+(defconst ditz-issue-paused-regex "Status: \\(paused\\)"
+  "Regex for issue paused status.")
+
+(defconst ditz-issue-fixed-regex "Status: closed: \\(fixed\\)"
+  "Regex for issue fixed status.")
+
+(defconst ditz-issue-wontfix-regex "Status: closed: \\(wontfix\\)"
+  "Regex for issue wontfix status.")
+
+(defconst ditz-issue-reorg-regex "Status: closed: \\(reorg\\)"
+  "Regex for issue reorganized status.")
 
 (defconst ditz-log-attr-regex
   (concat (regexp-opt '("date" "author" "issue") 'words) " *:")
@@ -697,6 +710,54 @@ current directory or the one with the .ditz-config file in it."
   "Face definition for comments."
   :group 'ditz)
 
+(defface ditz-issue-unstarted-face
+  '((((class color) (background light))
+     (:foreground "black"))
+    (((class color) (background dark))
+     (:foreground "black")))
+  "Face definition for issue unstarted status."
+  :group 'ditz)
+
+(defface ditz-issue-progress-face
+  '((((class color) (background light))
+     (:foreground "black"))
+    (((class color) (background dark))
+     (:foreground "black")))
+  "Face definition for issue in-progress status."
+  :group 'ditz)
+
+(defface ditz-issue-paused-face
+  '((((class color) (background light))
+     (:foreground "dark orange"))
+    (((class color) (background dark))
+     (:foreground "dark orange")))
+  "Face definition for issue paused status."
+  :group 'ditz)
+
+(defface ditz-issue-fixed-face
+  '((((class color) (background light))
+     (:foreground "dark green"))
+    (((class color) (background dark))
+     (:foreground "dark green")))
+  "Face definition for issue fixed status."
+  :group 'ditz)
+
+(defface ditz-issue-wontfix-face
+  '((((class color) (background light))
+     (:foreground "red"))
+    (((class color) (background dark))
+     (:foreground "red")))
+  "Face definition for issue wontfix status."
+  :group 'ditz)
+
+(defface ditz-issue-reorg-face
+  '((((class color) (background light))
+     (:foreground "blue"))
+    (((class color) (background dark))
+     (:foreground "blue")))
+  "Face definition for issue reorganized status."
+  :group 'ditz)
+
 (defface ditz-feature-face
   '((((class color) (background light))
      (:foreground "dark green"))
@@ -717,15 +778,32 @@ current directory or the one with the .ditz-config file in it."
 (defconst ditz-issue-attr-face 'ditz-issue-attr-face)
 (defconst ditz-release-name-face 'ditz-release-name-face)
 (defconst ditz-comment-face 'ditz-comment-face)
+
+(defconst ditz-issue-unstarted-face 'ditz-issue-unstarted-face)
+(defconst ditz-issue-progress-face 'ditz-issue-progress-face)
+(defconst ditz-issue-paused-face 'ditz-issue-paused-face)
+(defconst ditz-issue-fixed-face 'ditz-issue-fixed-face)
+(defconst ditz-issue-wontfix-face 'ditz-issue-wontfix-face)
+(defconst ditz-issue-reorg-face 'ditz-issue-reorg-face)
+
 (defconst ditz-feature-face 'ditz-feature-face)
 (defconst ditz-bug-face 'ditz-bug-face)
 
 (defconst ditz-font-lock-keywords
   `((,ditz-issue-attr-regex (1 ditz-issue-attr-face t))
     (,ditz-log-attr-regex (1 ditz-issue-attr-face t))
+
     (,ditz-comment-regex (1 ditz-comment-face t))
     (,ditz-issue-id-regex (1 ditz-issue-id-face t))
     (,ditz-release-name-regex (1 ditz-release-name-face t))
+
+    (,ditz-issue-unstarted-regex (1 ditz-issue-unstarted-face t))
+    (,ditz-issue-progress-regex (1 ditz-issue-progress-face t))
+    (,ditz-issue-paused-regex (1 ditz-issue-paused-face t))
+    (,ditz-issue-fixed-regex (1 ditz-issue-fixed-face t))
+    (,ditz-issue-wontfix-regex (1 ditz-issue-wontfix-face t))
+    (,ditz-issue-reorg-regex (1 ditz-issue-reorg-face t))
+
     (,ditz-feature-regex (1 ditz-feature-face t))
     (,ditz-bug-regex (1 ditz-bug-face t))))
 
