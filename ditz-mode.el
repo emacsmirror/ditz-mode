@@ -88,10 +88,10 @@
 (defconst ditz-issue-fixed-regex "Status: closed: \\(fixed\\)"
   "Regex for issue fixed status.")
 
-(defconst ditz-issue-wontfix-regex "Status: closed: \\(wontfix\\)"
+(defconst ditz-issue-wontfix-regex "Status: closed: \\(won't fix\\)"
   "Regex for issue wontfix status.")
 
-(defconst ditz-issue-reorg-regex "Status: closed: \\(reorg\\)"
+(defconst ditz-issue-reorg-regex "Status: closed: \\(reorganized\\)"
   "Regex for issue reorganized status.")
 
 (defconst ditz-log-attr-regex
