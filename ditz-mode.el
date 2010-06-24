@@ -5,7 +5,7 @@
 ;; Author:     Glenn Hutchings <zondo42@googlemail.com>
 ;; Maintainer: Glenn Hutchings <zondo42@googlemail.com>
 ;; Keywords:   tools
-;; Version:    0.1
+;; Version:    0.2
 ;;
 ;; This file is not a part of GNU Emacs.
 ;;
@@ -36,6 +36,12 @@
 ;; See the documentation for `ditz-mode' for more info.
 ;;
 ;;; History:
+;;
+;; Version 0.2 (24 Jun 2010):
+;;    Add support for issue-claiming plugin.
+;;    Add highlighting of issue status.
+;;    Add optional count to log commands.
+;;    Minor bug fixes.
 ;;
 ;; Version 0.1 (21 Mar 2010):
 ;;    First released version.
