@@ -242,6 +242,11 @@
   (interactive)
   (ditz-call-process "unclaimed" ditz-todo-release 'switch))
 
+(defun ditz-show-mine ()
+  "Show list of my issues."
+  (interactive)
+  (ditz-call-process "mine" ditz-todo-release 'switch))
+
 (defun ditz-set-component ()
   "Set an issue's component."
   (interactive)
@@ -352,7 +357,9 @@
 	((ditz-current-buffer-p "claimed")
 	 (ditz-call-process "claimed" ditz-todo-release 'switch))
 	((ditz-current-buffer-p "unclaimed")
-	 (ditz-call-process "unclaimed" ditz-todo-release 'switch))))
+	 (ditz-call-process "unclaimed" ditz-todo-release 'switch))
+	((ditz-current-buffer-p "mine")
+	 (ditz-call-process "mine" ditz-todo-release 'switch))))
 
 (defun ditz-quit ()
   "Bury the current Ditz buffer."
@@ -364,7 +371,7 @@
   (interactive)
   (delete-other-windows)
   (dolist (name '("todo" "status" "show" "shortlog" "releases" "log"
-		  "claimed" "unclaimed" "grep"))
+		  "claimed" "unclaimed" "mine" "grep"))
     (let ((buffer (get-buffer (ditz-buffer-name name))))
       (when buffer
 	(with-current-buffer buffer
@@ -535,7 +542,8 @@ current directory or the one with the .ditz-config file in it."
 	     (ditz-current-buffer-p "shortlog")
 	     (ditz-current-buffer-p "grep")
 	     (ditz-current-buffer-p "claimed")
-	     (ditz-current-buffer-p "unclaimed"))
+	     (ditz-current-buffer-p "unclaimed")
+	     (ditz-current-buffer-p "mine"))
 	 (let ((issue-id (ditz-current-issue t)))
 	   (when issue-id
 	     (ditz-call-process "show" issue-id 'display-other))))
@@ -574,8 +582,9 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-prefix "s" 'ditz-grep)
 (define-key ditz-prefix "r" 'ditz-show-releases)
 
-(define-key ditz-prefix "C" 'ditz-show-claimed)
-(define-key ditz-prefix "U" 'ditz-show-unclaimed)
+(define-key ditz-prefix "c" 'ditz-show-claimed)
+(define-key ditz-prefix "u" 'ditz-show-unclaimed)
+(define-key ditz-prefix "m" 'ditz-show-mine)
 
 (define-key ditz-prefix "g" 'ditz-html-generate)
 (define-key ditz-prefix "b" 'ditz-html-browse)
@@ -598,8 +607,9 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-mode-map "S" 'ditz-toggle-status)
 (define-key ditz-mode-map "R" 'ditz-toggle-release)
 
-(define-key ditz-mode-map "C" 'ditz-show-claimed)
-(define-key ditz-mode-map "U" 'ditz-show-unclaimed)
+(define-key ditz-mode-map "c" 'ditz-show-claimed)
+(define-key ditz-mode-map "u" 'ditz-show-unclaimed)
+(define-key ditz-mode-map "m" 'ditz-show-mine)
 
 (define-key ditz-mode-map "g" 'ditz-reload)
 (define-key ditz-mode-map "q" 'ditz-quit)
@@ -645,7 +655,7 @@ current directory or the one with the .ditz-config file in it."
 (defvar ditz-config-mode-map (make-keymap)
   "*Keymap for Ditz config commands.")
 
-(define-key ditz-mode-map "c" ditz-config-mode-map)
+(define-key ditz-mode-map "f" ditz-config-mode-map)
 
 (define-key ditz-config-mode-map "s" 'ditz-show-config)
 (define-key ditz-config-mode-map "e" 'ditz-edit-config)
