@@ -73,9 +73,7 @@
 (defconst ditz-issue-id-regex "\\([a-z][a-z-]*-[0-9]+\\)"
   "Regex for issue id.")
 
-(defconst ditz-issue-attr-regex
-  (concat (regexp-opt '("Title" "Description" "Type" "Status" "Creator"
-			"Age" "Release" "References" "Identifier") 'words) ":")
+(defconst ditz-issue-attr-regex "\\(^[A-Za-z ]\\{11\\}\\): "
   "Regex for issue attribute.")
 
 (defconst ditz-issue-status-regex
@@ -722,7 +720,7 @@ current directory or the one with the .ditz-config file in it."
 (defconst ditz-feature-face 'ditz-feature-face)
 (defconst ditz-bug-face 'ditz-bug-face)
 
-(defvar ditz-font-lock-keywords
+(defconst ditz-font-lock-keywords
   `((,ditz-issue-attr-regex (1 ditz-issue-attr-face t))
     (,ditz-log-attr-regex (1 ditz-issue-attr-face t))
     (,ditz-comment-regex (1 ditz-comment-face t))
