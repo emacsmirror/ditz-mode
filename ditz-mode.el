@@ -689,6 +689,7 @@ current directory or the one with the .ditz-config file in it."
     "---"
     ["Claimed issues"                   ditz-show-claimed t]
     ["Unclaimed issues"                 ditz-show-unclaimed t]
+    ["My issues"                        ditz-show-mine t]
     "---"
     ["Toggle issue status"              ditz-toggle-status t]
     ["Toggle release"         		ditz-toggle-release t])
