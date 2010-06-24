@@ -38,11 +38,17 @@ directory.  It looks first in the current directory, and then in parent
 directories.  Then it looks for the issue directory, first in the current
 directory, and then in the directory where it found ``.ditz-config``.
 
+Ditz mode also supports the commands defined in the ``issue-claiming``
+plugin, if it's enabled.  You'll have to enable the plugin yourself though,
+as described in the Ditz documentation.
+
 Using Ditz mode
 ---------------
 
 Once things are set up, you can use ``C-c C-d`` (or whatever prefix you
-chose) followed by ``C-h`` to get a list of valid commands.
+chose) followed by ``C-h`` to get a list of valid commands.  There's also a
+menu containing all the Ditz commands, which is useful for checking out all
+the bindings.
 
 Other contributed stuff
 =======================
