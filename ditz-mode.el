@@ -247,19 +247,19 @@
   "Show list of claimed issues."
   (interactive)
   (ditz-require "issue-claiming")
-  (ditz-call-process "claimed" ditz-todo-release 'switch))
+  (ditz-call-process "claimed" (ditz-todo-args) 'switch))
 
 (defun ditz-show-unclaimed ()
   "Show list of unclaimed issues."
   (interactive)
   (ditz-require "issue-claiming")
-  (ditz-call-process "unclaimed" ditz-todo-release 'switch))
+  (ditz-call-process "unclaimed" (ditz-todo-args) 'switch))
 
 (defun ditz-show-mine ()
   "Show list of my issues."
   (interactive)
   (ditz-require "issue-claiming")
-  (ditz-call-process "mine" ditz-todo-release 'switch))
+  (ditz-call-process "mine" (ditz-todo-args) 'switch))
 
 (defun ditz-set-component ()
   "Set an issue's component."
@@ -288,7 +288,7 @@
       (setq ditz-todo-flags "-a")
     (setq ditz-todo-flags ""))
   (ditz-toggle-message)
-  (ditz-todo))
+  (ditz-reload))
 
 (defun ditz-toggle-release ()
   "Show/hide by release."
@@ -297,7 +297,7 @@
       (setq ditz-todo-release (ditz-current-release))
     (setq ditz-todo-release ""))
   (ditz-toggle-message)
-  (ditz-todo))
+  (ditz-reload))
 
 (defun ditz-next-thing ()
   "Go to the next thing, maybe showing it in another window."
@@ -369,11 +369,11 @@
         ((ditz-current-buffer-p "log")
          (ditz-call-process "log" nil 'switch))
 	((ditz-current-buffer-p "claimed")
-	 (ditz-call-process "claimed" ditz-todo-release 'switch))
+	 (ditz-call-process "claimed" (ditz-todo-args) 'switch))
 	((ditz-current-buffer-p "unclaimed")
-	 (ditz-call-process "unclaimed" ditz-todo-release 'switch))
+	 (ditz-call-process "unclaimed" (ditz-todo-args) 'switch))
 	((ditz-current-buffer-p "mine")
-	 (ditz-call-process "mine" ditz-todo-release 'switch))))
+	 (ditz-call-process "mine" (ditz-todo-args) 'switch))))
 
 (defun ditz-quit ()
   "Bury the current Ditz buffer."
