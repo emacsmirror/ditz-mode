@@ -55,6 +55,10 @@ interested in:
     it's a feature or a bug.  Ditz mode highlights these specially, if
     they're found.
 
+``ditz-log.patch``
+    A patch for Ditz which adds an optional count for the ``log`` and
+    ``shortlog`` commands, to limit their output to that many entries.
+
 ``vcs.rb``
     A Ditz hook to automatically update version control status when issues
     are added or removed.  At the moment it supports Mercurial_, CVS and
