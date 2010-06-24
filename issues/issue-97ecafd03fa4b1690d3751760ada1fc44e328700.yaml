@@ -3,10 +3,10 @@ title: Highlight issue status strings
 desc: ""
 type: :task
 component: ditz-mode
-release: 
+release: "0.2"
 reporter: Glenn Hutchings <zondo42@googlemail.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2010-03-17 10:25:14.395847 Z
 references: []
 
@@ -15,4 +15,12 @@ log_events:
 - - 2010-03-17 10:25:15.147811 Z
   - Glenn Hutchings <zondo42@googlemail.com>
   - created
+  - ""
+- - 2010-06-24 14:17:18.515397 Z
+  - Glenn Hutchings <zondo42@googlemail.com>
+  - assigned to release 0.2 from unassigned
+  - ""
+- - 2010-06-24 14:17:27.971552 Z
+  - Glenn Hutchings <zondo42@googlemail.com>
+  - closed with disposition fixed
   - ""

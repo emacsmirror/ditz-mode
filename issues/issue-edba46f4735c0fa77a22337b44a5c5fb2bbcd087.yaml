@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Shrink issue window to fit buffer
+desc: When displaying issue in another window.
+type: :task
+component: ditz-mode
+release: "0.3"
+reporter: Glenn Hutchings <zondo42@googlemail.com>
+status: :unstarted
+disposition: 
+creation_time: 2010-06-24 14:20:25.221814 Z
+references: []
+
+id: edba46f4735c0fa77a22337b44a5c5fb2bbcd087
+log_events: 
+- - 2010-06-24 14:20:25.845707 Z
+  - Glenn Hutchings <zondo42@googlemail.com>
+  - created
+  - ""

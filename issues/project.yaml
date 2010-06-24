@@ -7,10 +7,36 @@ components:
 releases: 
 - !ditz.rubyforge.org,2008-03-06/release 
   name: "0.1"
+  status: :released
+  release_time: 2010-03-21 14:14:05.409162 Z
+  log_events: 
+  - - 2010-03-17 10:14:28.019849 Z
+    - Glenn Hutchings <zondo42@googlemail.com>
+    - created
+    - ""
+  - - 2010-03-21 14:14:05.409178 Z
+    - Glenn Hutchings <zondo42@googlemail.com>
+    - released
+    - ""
+- !ditz.rubyforge.org,2008-03-06/release 
+  name: "0.2"
+  status: :released
+  release_time: 2010-06-24 14:17:59.380079 Z
+  log_events: 
+  - - 2010-06-24 14:16:13.362557 Z
+    - Glenn Hutchings <zondo42@googlemail.com>
+    - created
+    - ""
+  - - 2010-06-24 14:17:59.380096 Z
+    - Glenn Hutchings <zondo42@googlemail.com>
+    - released
+    - ""
+- !ditz.rubyforge.org,2008-03-06/release 
+  name: "0.3"
   status: :unreleased
   release_time: 
   log_events: 
-  - - 2010-03-17 10:14:28.019849 Z
+  - - 2010-06-24 14:18:08.148013 Z
     - Glenn Hutchings <zondo42@googlemail.com>
     - created
     - ""

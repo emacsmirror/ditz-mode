@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Check required plugins are enabled
+desc: For example, need issue-claiming before the claim commands will work.
+type: :task
+component: ditz-mode
+release: "0.3"
+reporter: Glenn Hutchings <zondo42@googlemail.com>
+status: :unstarted
+disposition: 
+creation_time: 2010-06-24 14:19:03.940792 Z
+references: []
+
+id: 58b630173191bcdded467449330556d7312379d4
+log_events: 
+- - 2010-06-24 14:19:05.284668 Z
+  - Glenn Hutchings <zondo42@googlemail.com>
+  - created
+  - ""
