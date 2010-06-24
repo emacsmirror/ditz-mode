@@ -76,6 +76,9 @@
 (defconst ditz-config-filename ".ditz-config"
   "File name of the Ditz config file.")
 
+(defconst ditz-plugin-filename ".ditz-plugins"
+  "File name of the Ditz plugin file.")
+
 (defconst ditz-issue-id-regex "\\([a-z][a-z-]*-[0-9]+\\)"
   "Regex for issue id.")
 
@@ -231,26 +234,31 @@
 (defun ditz-claim ()
   "Claim an issue."
   (interactive)
+  (ditz-require "issue-claiming")
   (ditz-call-process "claim" (ditz-current-issue) 'switch t))
 
 (defun ditz-unclaim ()
   "Unclaim an issue."
   (interactive)
+  (ditz-require "issue-claiming")
   (ditz-call-process "unclaim" (ditz-current-issue) 'switch t))
 
 (defun ditz-show-claimed ()
   "Show list of claimed issues."
   (interactive)
+  (ditz-require "issue-claiming")
   (ditz-call-process "claimed" ditz-todo-release 'switch))
 
 (defun ditz-show-unclaimed ()
   "Show list of unclaimed issues."
   (interactive)
+  (ditz-require "issue-claiming")
   (ditz-call-process "unclaimed" ditz-todo-release 'switch))
 
 (defun ditz-show-mine ()
   "Show list of my issues."
   (interactive)
+  (ditz-require "issue-claiming")
   (ditz-call-process "mine" ditz-todo-release 'switch))
 
 (defun ditz-set-component ()
@@ -505,6 +513,7 @@ current directory or the one with the .ditz-config file in it."
 
     ;; Get issue directory name from config file.
     (with-current-buffer buf
+      (erase-buffer)
       (insert-file-contents configfile nil nil nil t)
       (goto-char (point-min))
       (if (search-forward "issue_dir: ")
@@ -540,6 +549,28 @@ current directory or the one with the .ditz-config file in it."
 	    (t
 	     (setq curdir (directory-file-name (file-name-directory curdir))))))
     (expand-file-name configfile)))
+
+(defun ditz-plugin-file ()
+  "Return pathname of the Ditz plugin file."
+  (let* ((configfile (ditz-config-file))
+	 (parentdir (file-name-directory configfile)))
+    (concat parentdir ditz-plugin-filename)))
+
+(defun ditz-require (plugin)
+  "Raise error if a plugin is not enabled."
+
+  (let ((pluginfile (ditz-plugin-file))
+	(buf (get-buffer-create "*ditz-plugins*"))
+	(enabled nil))
+    (with-current-buffer buf
+      (erase-buffer)
+      (if (file-exists-p pluginfile)
+	  (insert-file-contents pluginfile nil nil nil t))
+      (goto-char (point-min))
+      (if (search-forward plugin nil t)
+	  (setq enabled t)))
+    (unless enabled
+      (error "Ditz '%s' plugin is not enabled" plugin))))
 
 (defun ditz-show-thing ()
   "Show current thing in another window."
