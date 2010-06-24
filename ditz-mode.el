@@ -222,6 +222,26 @@
   (interactive)
   (ditz-call-process "stop" (ditz-current-issue) 'switch t))
 
+(defun ditz-claim ()
+  "Claim an issue."
+  (interactive)
+  (ditz-call-process "claim" (ditz-current-issue) 'switch t))
+
+(defun ditz-unclaim ()
+  "Unclaim an issue."
+  (interactive)
+  (ditz-call-process "unclaim" (ditz-current-issue) 'switch t))
+
+(defun ditz-show-claimed ()
+  "Show list of claimed issues."
+  (interactive)
+  (ditz-call-process "claimed" ditz-todo-release 'switch))
+
+(defun ditz-show-unclaimed ()
+  "Show list of unclaimed issues."
+  (interactive)
+  (ditz-call-process "unclaimed" ditz-todo-release 'switch))
+
 (defun ditz-set-component ()
   "Set an issue's component."
   (interactive)
@@ -328,7 +348,11 @@
         ((ditz-current-buffer-p "shortlog")
 	 (ditz-call-process "shortlog" nil 'switch))
         ((ditz-current-buffer-p "log")
-         (ditz-call-process "log" nil 'switch))))
+         (ditz-call-process "log" nil 'switch))
+	((ditz-current-buffer-p "claimed")
+	 (ditz-call-process "claimed" ditz-todo-release 'switch))
+	((ditz-current-buffer-p "unclaimed")
+	 (ditz-call-process "unclaimed" ditz-todo-release 'switch))))
 
 (defun ditz-quit ()
   "Bury the current Ditz buffer."
@@ -339,7 +363,8 @@
   "Bury all Ditz buffers."
   (interactive)
   (delete-other-windows)
-  (dolist (name '("todo" "status" "show" "shortlog" "releases" "log" "grep"))
+  (dolist (name '("todo" "status" "show" "shortlog" "releases" "log"
+		  "claimed" "unclaimed" "grep"))
     (let ((buffer (get-buffer (ditz-buffer-name name))))
       (when buffer
 	(with-current-buffer buffer
@@ -508,7 +533,9 @@ current directory or the one with the .ditz-config file in it."
   (cond ((or (ditz-current-buffer-p "todo")
 	     (ditz-current-buffer-p "log")
 	     (ditz-current-buffer-p "shortlog")
-	     (ditz-current-buffer-p "grep"))
+	     (ditz-current-buffer-p "grep")
+	     (ditz-current-buffer-p "claimed")
+	     (ditz-current-buffer-p "unclaimed"))
 	 (let ((issue-id (ditz-current-issue t)))
 	   (when issue-id
 	     (ditz-call-process "show" issue-id 'display-other))))
@@ -549,6 +576,7 @@ current directory or the one with the .ditz-config file in it."
 
 (define-key ditz-prefix "c" 'ditz-show-config)
 (define-key ditz-prefix "C" 'ditz-edit-config)
+
 (define-key ditz-prefix "g" 'ditz-html-generate)
 (define-key ditz-prefix "b" 'ditz-html-browse)
 
@@ -570,8 +598,8 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-mode-map "S" 'ditz-toggle-status)
 (define-key ditz-mode-map "R" 'ditz-toggle-release)
 
-(define-key ditz-mode-map "c" 'ditz-show-config)
-(define-key ditz-mode-map "C" 'ditz-edit-config)
+(define-key ditz-mode-map "C" 'ditz-show-claimed)
+(define-key ditz-mode-map "U" 'ditz-show-unclaimed)
 
 (define-key ditz-mode-map "g" 'ditz-reload)
 (define-key ditz-mode-map "q" 'ditz-quit)
@@ -589,6 +617,8 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-issue-mode-map "c" 'ditz-comment)
 (define-key ditz-issue-mode-map "<" 'ditz-start)
 (define-key ditz-issue-mode-map ">" 'ditz-stop)
+(define-key ditz-issue-mode-map "(" 'ditz-claim)
+(define-key ditz-issue-mode-map ")" 'ditz-unclaim)
 (define-key ditz-issue-mode-map "a" 'ditz-assign)
 (define-key ditz-issue-mode-map "u" 'ditz-unassign)
 (define-key ditz-issue-mode-map "r" 'ditz-add-reference)
@@ -611,6 +641,15 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-release-mode-map "l" 'ditz-show-releases)
 (define-key ditz-release-mode-map "A" 'ditz-archive)
 
+;; Config commands.
+(defvar ditz-config-mode-map (make-keymap)
+  "*Keymap for Ditz config commands.")
+
+(define-key ditz-mode-map "c" ditz-config-mode-map)
+
+(define-key ditz-config-mode-map "s" 'ditz-show-config)
+(define-key ditz-config-mode-map "e" 'ditz-edit-config)
+
 ;; HTML commands.
 (defvar ditz-html-mode-map (make-keymap)
   "*Keymap for Ditz HTML commands.")
@@ -632,6 +671,9 @@ current directory or the one with the .ditz-config file in it."
     ["Short log"                        ditz-shortlog t]
     ["Detailed log"                     ditz-log t]
     "---"
+    ["Claimed issues"                   ditz-show-claimed t]
+    ["Unclaimed issues"                 ditz-show-unclaimed t]
+    "---"
     ["Toggle issue status"              ditz-toggle-status t]
     ["Toggle release"         		ditz-toggle-release t])
 
@@ -648,6 +690,9 @@ current directory or the one with the .ditz-config file in it."
     "---"
     ["Assign to release"           	ditz-assign t]
     ["Unassign"                    	ditz-unassign t]
+    "---"
+    ["Claim"		          	ditz-claim t]
+    ["Unclaim"                    	ditz-unclaim t]
     "---"
     ["Close"                       	ditz-close t]
     ["Drop"                        	ditz-drop t])
