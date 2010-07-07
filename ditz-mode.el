@@ -79,7 +79,7 @@
 (defconst ditz-plugin-filename ".ditz-plugins"
   "File name of the Ditz plugin file.")
 
-(defconst ditz-issue-id-regex "\\([a-z][a-z0-9-]*-[0-9]+\\)"
+(defconst ditz-issue-id-regex "\\b\\([a-z][a-z0-9-]*-[0-9]+\\)\\b"
   "Regex for issue id.")
 
 (defconst ditz-issue-attr-regex "\\(^[A-Za-z ]\\{11\\}\\): "
