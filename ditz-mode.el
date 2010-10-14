@@ -36,6 +36,9 @@
 ;; See the documentation for `ditz-mode' for more info.
 ;;
 ;;; History:
+;; Version 0.3 (unreleased):
+;;    Add directory name to ditz buffer names.
+;;    Issue regexps now only match words and digits.
 ;;
 ;; Version 0.2 (24 Jun 2010):
 ;;    Add support for issue-claiming plugin.
