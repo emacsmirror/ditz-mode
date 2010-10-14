@@ -596,7 +596,9 @@ current directory or the one with the .ditz-config file in it."
 
 (defun ditz-buffer-name (cmd)
   "Return buffer name for command CMD."
-  (concat "*ditz-" cmd "*"))
+  (let* ((issuedir (ditz-issue-directory))
+	 (dir (file-name-directory issuedir)))
+    (concat "*ditz-" cmd ": " dir "*")))
 
 (defun ditz-current-buffer-p (cmd)
   "Return whether the current buffer has output of command CMD."
