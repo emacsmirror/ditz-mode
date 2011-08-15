@@ -490,7 +490,12 @@
     ;; Go to Ditz mode if required.
     (when (and (not interactive) (eq buffer (current-buffer)))
       (ditz-mode)
-      (goto-char (point-min)))))
+      (goto-char (point-min)))
+
+    ;; Shrink other window (must be a better way than this!).
+    (other-window 1)
+    (shrink-window-if-larger-than-buffer)
+    (other-window -1)))
 
 (defun ditz-project-file ()
   "Return the pathname of the current project file."
