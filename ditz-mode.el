@@ -657,6 +657,7 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-mode-map "q" 'ditz-quit)
 (define-key ditz-mode-map "Q" 'ditz-quit-all)
 
+(define-key ditz-mode-map "o" 'delete-other-windows)
 (define-key ditz-mode-map "?" 'describe-mode)
 
 ;; Issue commands.
