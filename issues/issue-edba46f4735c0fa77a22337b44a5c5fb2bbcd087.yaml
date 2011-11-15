@@ -5,8 +5,8 @@ type: :task
 component: ditz-mode
 release: "0.3"
 reporter: Glenn Hutchings <zondo42@googlemail.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2010-06-24 14:20:25.221814 Z
 references: []
 
@@ -16,3 +16,7 @@ log_events:
   - Glenn Hutchings <zondo42@googlemail.com>
   - created
   - ""
+- - 2011-11-15 15:35:30.609107 Z
+  - Glenn Hutchings <zondo42@gmail.com>
+  - closed with disposition fixed
+  - This got done back in August.

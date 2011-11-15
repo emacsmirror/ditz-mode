@@ -37,6 +37,7 @@
 ;;
 ;;; History:
 ;; Version 0.3 (unreleased):
+;;    Auto-shrink issue windows.
 ;;    Add directory name to ditz buffer names.
 ;;    Issue regexps now only match words and digits.
 ;;
