@@ -40,6 +40,7 @@
 ;;    Auto-shrink issue windows.
 ;;    Add directory name to ditz buffer names.
 ;;    Issue regexps now only match words and digits.
+;;    Add pyditz support (https://pypi.python.org/pypi/pyditz)
 ;;
 ;; Version 0.2 (24 Jun 2010):
 ;;    Add support for issue-claiming plugin.
@@ -66,7 +67,9 @@
   :group 'tools)
 
 (defcustom ditz-program "ditz"
-  "Ditz command."
+  "Ditz command.
+
+Set this to 'pyditz' to use that program instead."
   :type 'string
   :group 'ditz)
 
@@ -133,6 +136,9 @@
 
 (defvar ditz-todo-lastdir nil
   "Last issue directory visited by `ditz-todo'.")
+
+(defvar ditz-is-pyditz (string= ditz-program "pyditz")
+  "Whether we're using pyditz.")
 
 ;;;; Commands.
 
@@ -441,7 +447,9 @@
   (let* ((issuedir (ditz-issue-directory))
 	 (quoteddir (concat "\"" issuedir "\""))
 	 (cmd (mapconcat 'identity
-			 (list ditz-program "-i" quoteddir command arg) " "))
+			 (if ditz-is-pyditz
+			     (list ditz-program command arg)
+			   (list ditz-program "-i" quoteddir command arg)) " "))
 	 (bufname (ditz-buffer-name command))
 	 (buffer (get-buffer-create bufname))
          (proc (get-buffer-process buffer)))
