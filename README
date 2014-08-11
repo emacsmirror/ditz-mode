@@ -50,6 +50,9 @@ chose) followed by ``C-h`` to get a list of valid commands.  There's also a
 menu containing all the Ditz commands, which is useful for checking out all
 the bindings.
 
+If you want to Ditz mode with PyDitz_ instead of Ditz, you can customize
+the ``ditz-program`` variable.
+
 Other contributed stuff
 =======================
 
@@ -79,5 +82,6 @@ Ditz mode.  This is an almost (but not quite) complete rewrite.
 .. _Ditz: http://ditz.rubyforge.org
 .. _Emacs: http://www.gnu.org/emacs
 .. _Mercurial: http://mercurial.selenic.com
+.. _PyDitz: https://bitbucket.org/zondo/pyditz
 .. _Bitbucket: http://bitbucket.org/zondo/ditz-mode
 .. _original: http://github.com/kentaro/emacs-ditz/tree/master
