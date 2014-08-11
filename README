@@ -81,7 +81,3 @@ Ditz mode.  This is an almost (but not quite) complete rewrite.
 .. _Mercurial: http://mercurial.selenic.com
 .. _Bitbucket: http://bitbucket.org/zondo/ditz-mode
 .. _original: http://github.com/kentaro/emacs-ditz/tree/master
-
-.. Local Variables:
-.. mode: rst
-.. End:
