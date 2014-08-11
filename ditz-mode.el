@@ -5,7 +5,7 @@
 ;; Author:     Glenn Hutchings <zondo42@googlemail.com>
 ;; Maintainer: Glenn Hutchings <zondo42@googlemail.com>
 ;; Keywords:   tools
-;; Version:    0.2
+;; Version:    0.3
 ;;
 ;; This file is not a part of GNU Emacs.
 ;;
@@ -36,7 +36,7 @@
 ;; See the documentation for `ditz-mode' for more info.
 ;;
 ;;; History:
-;; Version 0.3 (unreleased):
+;; Version 0.3 (Nov 24 2013):
 ;;    Auto-shrink issue windows.
 ;;    Add directory name to ditz buffer names.
 ;;    Issue regexps now only match words and digits.
