@@ -1,11 +1,11 @@
 ;;; ditz-mode.el --- Emacs interface to Ditz issue tracking system
 ;;
-;; Copyright (C) 2008-2010 Kentaro Kuribayashi, Glenn Hutchings
+;; Copyright (C) 2008-2015 Kentaro Kuribayashi, Glenn Hutchings
 ;;
-;; Author:     Glenn Hutchings <zondo42@googlemail.com>
-;; Maintainer: Glenn Hutchings <zondo42@googlemail.com>
+;; Author:     Glenn Hutchings <zondo42@gmail.com>
+;; Maintainer: Glenn Hutchings <zondo42@gmail.com>
 ;; Keywords:   tools
-;; Version:    0.3
+;; Version:    0.4
 ;;
 ;; This file is not a part of GNU Emacs.
 ;;
@@ -25,7 +25,7 @@
 ;;; Commentary:
 ;;
 ;; This is an Emacs interface to the Ditz distributed issue tracking
-;; system, which can be found at http://ditz.rubyforge.org.
+;; system, which can be found at http://rubygems.org/gems/ditz.
 ;;
 ;; Put this file in your Lisp load path and something like the following in
 ;; your .emacs file:
@@ -36,6 +36,9 @@
 ;; See the documentation for `ditz-mode' for more info.
 ;;
 ;;; History:
+;; Version 0.4 (unreleased):
+;;    Add arbitrary Ditz command execution via '!'.
+;;
 ;; Version 0.3 (Nov 24 2013):
 ;;    Auto-shrink issue windows.
 ;;    Add directory name to ditz buffer names.
@@ -141,6 +144,11 @@ Set this to 'pyditz' to use that program instead."
   "Whether we're using pyditz.")
 
 ;;;; Commands.
+
+(defun ditz-command (cmd)
+  "Run arbitrary Ditz command."
+  (interactive "sDitz command: ")
+  (ditz-call-process cmd nil 'pop t))
 
 (defun ditz-todo ()
   "Show current todo list."
@@ -672,6 +680,7 @@ current directory or the one with the .ditz-config file in it."
 (define-key ditz-mode-map "q" 'ditz-quit)
 (define-key ditz-mode-map "Q" 'ditz-quit-all)
 
+(define-key ditz-mode-map "!" 'ditz-command)
 (define-key ditz-mode-map "o" 'delete-other-windows)
 (define-key ditz-mode-map "?" 'describe-mode)
 
@@ -786,6 +795,7 @@ current directory or the one with the .ditz-config file in it."
     ["Edit config file"                 ditz-edit-config t])
 
    "---"
+   ["Run command"			ditz-command t]
    ["Refresh"                           ditz-reload t]
    ["Quit"                              ditz-quit t]
    ["Quit all"             		ditz-quit-all t]))
