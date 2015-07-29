@@ -214,7 +214,7 @@ Set this to 'pyditz' to use that program instead."
   (interactive)
   (let ((issue-id (ditz-current-issue))
 	(issue-dir (ditz-issue-directory)))
-    (ditz-call-process "show" issue-id)
+    (ditz-call-process "show" issue-id 'switch)
     (goto-char (point-min))
     (save-excursion
       (let ((beg (search-forward "Identifier: "))
