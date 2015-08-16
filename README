@@ -79,7 +79,7 @@ Credits
 Thanks to Kentaro Kuribayashi <kentarok@gmail.com>, author of the original_
 Ditz mode.  This is an almost (but not quite) complete rewrite.
 
-.. _Ditz: http://ditz.rubyforge.org
+.. _Ditz: http://rubygems.org/gems/ditz
 .. _Emacs: http://www.gnu.org/emacs
 .. _Mercurial: http://mercurial.selenic.com
 .. _PyDitz: https://bitbucket.org/zondo/pyditz
