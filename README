@@ -9,7 +9,7 @@ Ditz_ is a distributed issue tracking system, written in Ruby by William
 Morgan, and designed for use with distributed version control systems such
 as Mercurial_.  Ditz mode is an editing mode for GNU Emacs_, allowing Ditz
 commands to be run directly inside an Emacs buffer.  You can find the
-latest version of Ditz mode at Bitbucket_.
+latest version of Ditz mode at Sourcehut_.
 
 Ditz mode is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -83,5 +83,5 @@ Ditz mode.  This is an almost (but not quite) complete rewrite.
 .. _Emacs: http://www.gnu.org/emacs
 .. _Mercurial: http://mercurial.selenic.com
 .. _PyDitz: https://bitbucket.org/zondo/pyditz
-.. _Bitbucket: http://bitbucket.org/zondo/ditz-mode
+.. _Sourcehut: https://hg.sr.ht/~zondo/ditz-mode
 .. _original: http://github.com/kentaro/emacs-ditz/tree/master
